@@ -1,10 +1,10 @@
 import { buildPrompt } from './prompt'
 
-export async function generatePreview({ selfieDataUrl, style, colour, model }) {
+export async function generatePreview({ selfieDataUrl, style, moneyPiece, colour, model }) {
   const base64 = selfieDataUrl.split(',')[1]
   const mimeType = selfieDataUrl.split(';')[0].split(':')[1]
 
-  const prompt = buildPrompt({ style, colour })
+  const prompt = buildPrompt({ style, moneyPiece, colour })
 
   const response = await fetch('/api/generate', {
     method: 'POST',

@@ -1,7 +1,7 @@
-import { HIGHLIGHT_STYLES } from '../lib/constants'
+import { HIGHLIGHT_STYLES, MONEY_PIECE } from '../lib/constants'
 import './StyleSelector.css'
 
-export function StyleSelector({ value, onChange }) {
+export function StyleSelector({ value, moneyPiece, onChange, onMoneyPieceChange }) {
   return (
     <div className="selector-group">
       <label className="selector-label">Highlight Style</label>
@@ -17,6 +17,13 @@ export function StyleSelector({ value, onChange }) {
           </button>
         ))}
       </div>
+      <button
+        className={`style-card money-piece-card ${moneyPiece ? 'selected' : ''}`}
+        onClick={() => onMoneyPieceChange(!moneyPiece)}
+      >
+        <span className="style-card-name">{moneyPiece ? '✓ ' : '+ '}{MONEY_PIECE.label}</span>
+        <span className="style-card-desc">{MONEY_PIECE.description}</span>
+      </button>
     </div>
   )
 }

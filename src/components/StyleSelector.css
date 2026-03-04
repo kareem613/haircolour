@@ -37,3 +37,12 @@
   color: var(--color-text-muted);
   margin-top: 0.15rem;
 }
+
+.money-piece-card {
+  margin-top: 0.5rem;
+  border-style: dashed;
+}
+
+.money-piece-card.selected {
+  border-style: solid;
+}

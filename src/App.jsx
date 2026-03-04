@@ -12,8 +12,9 @@ function App() {
   const [step, setStep] = useState('capture')
   const [selfieData, setSelfieData] = useState(null)
   const [style, setStyle] = useState(null)
+  const [moneyPiece, setMoneyPiece] = useState(false)
   const [colour, setColour] = useState(null)
-  const [model, setModel] = useState(MODELS[0].id)
+  const [model, setModel] = useState(MODELS[MODELS.length - 1].id)
   const [resultImage, setResultImage] = useState(null)
   const [error, setError] = useState(null)
 
@@ -29,6 +30,7 @@ function App() {
       const result = await generatePreview({
         selfieDataUrl: selfieData,
         style,
+        moneyPiece,
         colour,
         model
       })
@@ -43,6 +45,7 @@ function App() {
   function handleTryAgain() {
     setResultImage(null)
     setStyle(null)
+    setMoneyPiece(false)
     setColour(null)
     setError(null)
     setStep('options')
@@ -52,6 +55,7 @@ function App() {
     setSelfieData(null)
     setResultImage(null)
     setStyle(null)
+    setMoneyPiece(false)
     setColour(null)
     setError(null)
     setStep('capture')
@@ -71,7 +75,7 @@ function App() {
           <div className="options-screen">
             <img src={selfieData} alt="Your selfie" className="selfie-preview" />
             {error && <div className="error-banner">{error}</div>}
-            <StyleSelector value={style} onChange={setStyle} />
+            <StyleSelector value={style} moneyPiece={moneyPiece} onChange={setStyle} onMoneyPieceChange={setMoneyPiece} />
             <ColourSelector value={colour} onChange={setColour} />
             <ModelSelector value={model} onChange={setModel} />
             <button

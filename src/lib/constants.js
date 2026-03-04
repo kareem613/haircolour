@@ -1,9 +1,10 @@
 export const HIGHLIGHT_STYLES = [
   { id: 'balayage', label: 'Balayage', description: 'Hand-painted, natural gradient' },
-  { id: 'money-piece', label: 'Money Piece', description: 'Face-framing highlights' },
   { id: 'traditional', label: 'Highlights', description: 'Classic foil highlights' },
   { id: 'ombre', label: 'Ombré', description: 'Dark-to-light gradient transition' },
 ]
+
+export const MONEY_PIECE = { id: 'money-piece', label: 'Money Piece', description: 'Add face-framing highlights' }
 
 export const COLOURS = [
   { id: 'caramel', label: 'Caramel', swatch: '#C68E5B' },
