@@ -1,0 +1,90 @@
+.camera-capture {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2rem;
+  padding: 2rem 1rem;
+  min-height: 60vh;
+  justify-content: center;
+}
+
+.capture-prompt {
+  text-align: center;
+}
+
+.capture-icon {
+  font-size: 3rem;
+  margin-bottom: 0.5rem;
+}
+
+.capture-prompt h2 {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: var(--color-text);
+  margin: 0 0 0.5rem;
+}
+
+.capture-prompt p {
+  color: var(--color-text-muted);
+  font-size: 0.95rem;
+  max-width: 280px;
+  margin: 0 auto;
+  line-height: 1.4;
+}
+
+.capture-options {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  width: 100%;
+  max-width: 300px;
+}
+
+.camera-viewfinder {
+  width: 100%;
+  max-width: 400px;
+  aspect-ratio: 1;
+  object-fit: cover;
+  border-radius: var(--radius-lg);
+  background: #000;
+}
+
+.camera-actions {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1.5rem;
+  padding: 1rem;
+}
+
+.btn-capture {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  border: 3px solid var(--color-accent);
+  background: transparent;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  padding: 0;
+}
+
+.capture-ring {
+  display: block;
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  background: var(--color-accent);
+  transition: transform 0.1s;
+}
+
+.btn-capture:active .capture-ring {
+  transform: scale(0.9);
+}
+
+.camera-error {
+  color: var(--color-error);
+  font-size: 0.85rem;
+  text-align: center;
+}
