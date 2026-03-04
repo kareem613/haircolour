@@ -14,6 +14,8 @@ export const COLOURS = [
 ]
 
 export const MODELS = [
-  { id: 'gemini-2.0-flash-exp-image-generation', label: 'Gemini 2.0 Flash Exp' },
-  { id: 'imagen-3.0-generate-002', label: 'Imagen 3' },
+  { id: 'gemini-2.0-flash-exp-image-generation', label: 'Gemini 2.0 Flash (Image Gen) Experimental' },
+  { id: 'gemini-2.5-flash-image', label: 'Gemini 2.5 Flash Image' },
+  { id: 'gemini-3-pro-image-preview', label: 'Gemini 3 Pro Image Preview' },
+  { id: 'gemini-3.1-flash-image-preview', label: 'Gemini 3.1 Flash Image Preview' },
 ]
