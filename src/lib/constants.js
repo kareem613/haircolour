@@ -2,6 +2,7 @@ export const HIGHLIGHT_STYLES = [
   { id: 'balayage', label: 'Balayage', description: 'Hand-painted, natural gradient' },
   { id: 'money-piece', label: 'Money Piece', description: 'Face-framing highlights' },
   { id: 'traditional', label: 'Highlights', description: 'Classic foil highlights' },
+  { id: 'ombre', label: 'Ombré', description: 'Dark-to-light gradient transition' },
 ]
 
 export const COLOURS = [

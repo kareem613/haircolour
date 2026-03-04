@@ -103,6 +103,9 @@ function App() {
           />
         )}
       </main>
+      <footer className="app-footer">
+        {__APP_VERSION__} ({__COMMIT_SHA__})
+      </footer>
     </div>
   )
 }

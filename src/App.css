@@ -67,6 +67,13 @@
   font-size: 0.95rem;
 }
 
+.app-footer {
+  text-align: center;
+  padding: 1rem;
+  font-size: 0.7rem;
+  color: var(--color-text-muted);
+}
+
 .error-banner {
   background: #ffeaea;
   color: var(--color-error);
