@@ -24,37 +24,16 @@ const FACE_OVAL_INDICES = [
   172, 58, 132, 93, 234, 127, 162, 21, 54, 103, 67, 109
 ]
 
-export async function createFaceMaskedImage(imageDataUrl) {
-  const fl = await getLandmarker()
-
-  // Load image into an HTMLImageElement
-  const img = new Image()
-  await new Promise((resolve, reject) => {
-    img.onload = resolve
+function loadImage(src) {
+  return new Promise((resolve, reject) => {
+    const img = new Image()
+    img.onload = () => resolve(img)
     img.onerror = reject
-    img.src = imageDataUrl
+    img.src = src
   })
+}
 
-  const canvas = document.createElement('canvas')
-  canvas.width = img.naturalWidth
-  canvas.height = img.naturalHeight
-  const ctx = canvas.getContext('2d')
-
-  // Draw the original image
-  ctx.drawImage(img, 0, 0)
-
-  // Detect face landmarks
-  const result = fl.detect(img)
-
-  if (!result.faceLandmarks || result.faceLandmarks.length === 0) {
-    return { maskedUrl: null, error: 'No face detected' }
-  }
-
-  const landmarks = result.faceLandmarks[0]
-  const w = img.naturalWidth
-  const h = img.naturalHeight
-
-  // Build face oval path from landmark indices
+function drawFaceOvalPath(ctx, landmarks, w, h) {
   ctx.beginPath()
   const firstPt = landmarks[FACE_OVAL_INDICES[0]]
   ctx.moveTo(firstPt.x * w, firstPt.y * h)
@@ -63,10 +42,88 @@ export async function createFaceMaskedImage(imageDataUrl) {
     ctx.lineTo(pt.x * w, pt.y * h)
   }
   ctx.closePath()
+}
 
-  // Black out the face area
+export async function createFaceMaskedImage(imageDataUrl) {
+  const fl = await getLandmarker()
+  const img = await loadImage(imageDataUrl)
+
+  const canvas = document.createElement('canvas')
+  canvas.width = img.naturalWidth
+  canvas.height = img.naturalHeight
+  const ctx = canvas.getContext('2d')
+
+  ctx.drawImage(img, 0, 0)
+
+  const result = fl.detect(img)
+
+  if (!result.faceLandmarks || result.faceLandmarks.length === 0) {
+    return { maskedUrl: null, error: 'No face detected' }
+  }
+
+  const landmarks = result.faceLandmarks[0]
+  drawFaceOvalPath(ctx, landmarks, img.naturalWidth, img.naturalHeight)
+
   ctx.fillStyle = 'black'
   ctx.fill()
 
   return { maskedUrl: canvas.toDataURL('image/jpeg', 0.85), error: null }
+}
+
+/**
+ * Combines the Gemini result (hair) with the original image (face).
+ * Uses a feathered (blurred) mask for seamless blending — no hard edges.
+ */
+export async function combineWithOriginalFace(originalDataUrl, processedDataUrl) {
+  const fl = await getLandmarker()
+  const [originalImg, processedImg] = await Promise.all([
+    loadImage(originalDataUrl),
+    loadImage(processedDataUrl),
+  ])
+
+  // Detect face on the ORIGINAL image
+  const result = fl.detect(originalImg)
+
+  if (!result.faceLandmarks || result.faceLandmarks.length === 0) {
+    return processedDataUrl
+  }
+
+  const landmarks = result.faceLandmarks[0]
+  const w = originalImg.naturalWidth
+  const h = originalImg.naturalHeight
+
+  // --- Mask canvas: create a soft feathered mask of the face ---
+  const maskCanvas = document.createElement('canvas')
+  maskCanvas.width = w
+  maskCanvas.height = h
+  const maskCtx = maskCanvas.getContext('2d')
+
+  // Draw the hard face oval shape in white
+  maskCtx.fillStyle = 'white'
+  drawFaceOvalPath(maskCtx, landmarks, w, h)
+  maskCtx.fill()
+
+  // Blur the mask to create feathered edges
+  maskCtx.filter = 'blur(15px)'
+  maskCtx.globalCompositeOperation = 'source-in'
+  maskCtx.fillRect(0, 0, w, h)
+
+  // --- Main canvas: composite the images ---
+  const mainCanvas = document.createElement('canvas')
+  mainCanvas.width = w
+  mainCanvas.height = h
+  const mainCtx = mainCanvas.getContext('2d')
+
+  // Step 1: Draw the ORIGINAL image (face source)
+  mainCtx.drawImage(originalImg, 0, 0)
+
+  // Step 2: Apply the feathered mask — keeps only the face area with soft edges
+  mainCtx.globalCompositeOperation = 'destination-in'
+  mainCtx.drawImage(maskCanvas, 0, 0)
+
+  // Step 3: Draw the PROCESSED image underneath (hair + background)
+  mainCtx.globalCompositeOperation = 'destination-over'
+  mainCtx.drawImage(processedImg, 0, 0, w, h)
+
+  return mainCanvas.toDataURL('image/jpeg', 0.85)
 }

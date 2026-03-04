@@ -6,7 +6,7 @@ import { ModelSelector } from './components/ModelSelector'
 import { ResultDisplay } from './components/ResultDisplay'
 import { generatePreview } from './lib/api'
 import { MODELS } from './lib/constants'
-import { createFaceMaskedImage } from './lib/faceMask'
+import { createFaceMaskedImage, combineWithOriginalFace } from './lib/faceMask'
 import './App.css'
 
 const isDebug = new URLSearchParams(window.location.search).has('debug')
@@ -45,7 +45,9 @@ function App() {
         colour,
         model
       })
-      setResultImage(result.imageUrl)
+      // Combine: Gemini's hair + original face
+      const combined = await combineWithOriginalFace(selfieData, result.imageUrl)
+      setResultImage(combined)
       setStep('result')
     } catch (err) {
       setError(err.message)
