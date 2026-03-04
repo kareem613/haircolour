@@ -29,7 +29,7 @@ ${instructions}
 - MANDATORY: Retain the original face exactly as-is — do not alter facial features, expression, skin tone, or any part of the face in any way
 - Keep skin, clothing, background, and all non-hair elements completely unchanged
 - The result should look natural and realistic, as if done by a professional salon colourist
-- Maintain the original hair length, texture, and volume
+- Do NOT change the hairstyle, cut, parting, length, texture, or volume — only add colour highlights
 - The highlights should be blended naturally with the existing hair colour
 - Preserve the lighting and photo quality of the original image
 - Output ONLY the edited photo with no text overlay or watermarks`
