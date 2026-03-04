@@ -2,8 +2,8 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 1.25rem;
-  padding: 1.5rem 1rem;
+  gap: 1rem;
+  padding: 1.25rem 1rem;
 }
 
 .result-title {
@@ -13,32 +13,79 @@
   margin: 0;
 }
 
-.result-images {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 0.75rem;
-  width: 100%;
-}
-
-.result-image-wrapper {
+.result-toggle {
   display: flex;
-  flex-direction: column;
-  gap: 0.35rem;
+  background: var(--color-border);
+  border-radius: var(--radius-md);
+  padding: 3px;
+  gap: 2px;
 }
 
-.result-label {
-  font-size: 0.75rem;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
+.toggle-btn {
+  padding: 0.4rem 1.25rem;
+  border: none;
+  border-radius: calc(var(--radius-md) - 2px);
+  font-size: 0.85rem;
+  font-weight: 500;
+  font-family: inherit;
+  cursor: pointer;
+  background: transparent;
   color: var(--color-text-muted);
+  transition: background 0.15s, color 0.15s;
+}
+
+.toggle-btn.active {
+  background: var(--color-surface);
+  color: var(--color-text);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+}
+
+.result-image-container {
+  position: relative;
+  width: 100%;
+  cursor: zoom-in;
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+}
+
+.result-image-container.zoomed {
+  cursor: zoom-out;
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  background: rgba(0, 0, 0, 0.9);
+  border-radius: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.result-image-container.zoomed .result-image {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  aspect-ratio: auto;
+  border-radius: 0;
 }
 
 .result-image {
   width: 100%;
   aspect-ratio: 3/4;
   object-fit: cover;
-  border-radius: var(--radius-md);
+  border-radius: var(--radius-lg);
+  display: block;
+}
+
+.zoom-hint {
+  position: absolute;
+  bottom: 0.75rem;
+  right: 0.75rem;
+  background: rgba(0, 0, 0, 0.5);
+  color: #fff;
+  font-size: 0.7rem;
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+  pointer-events: none;
 }
 
 .result-actions {
