@@ -22,9 +22,12 @@ export function buildPrompt({ style, moneyPiece, colour }) {
 Style: ${styleDescription}
 Colour: ${colourName}
 
+MANDATORY: Use inpainting only — DO NOT TOUCH FACE. The ONLY modification allowed is adding highlights to the hair. Everything else in the image MUST remain identical to the original.
+
 Instructions:
 ${instructions}
-- Keep the face, skin, clothing, and background completely unchanged
+- MANDATORY: Retain the original face exactly as-is — do not alter facial features, expression, skin tone, or any part of the face in any way
+- Keep skin, clothing, background, and all non-hair elements completely unchanged
 - The result should look natural and realistic, as if done by a professional salon colourist
 - Maintain the original hair length, texture, and volume
 - The highlights should be blended naturally with the existing hair colour
