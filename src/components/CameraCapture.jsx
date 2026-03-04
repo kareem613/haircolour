@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import heic2any from 'heic2any'
 import { useCamera } from '../hooks/useCamera'
 import './CameraCapture.css'
 
@@ -6,12 +7,34 @@ export function CameraCapture({ onCapture }) {
   const { videoRef, active, startCamera, capturePhoto, stopCamera, error } = useCamera()
   const [mode, setMode] = useState('choose')
 
-  function handleFileChange(e) {
+  async function handleFileChange(e) {
     const file = e.target.files?.[0]
     if (!file) return
-    const reader = new FileReader()
-    reader.onload = () => onCapture(reader.result)
-    reader.readAsDataURL(file)
+
+    let blob = file
+    // Convert HEIC/HEIF to JPEG since browsers can't render them natively
+    if (file.type === 'image/heic' || file.type === 'image/heif' || file.name.toLowerCase().endsWith('.heic')) {
+      try {
+        blob = await heic2any({ blob: file, toType: 'image/jpeg', quality: 0.85 })
+      } catch {
+        // If conversion fails, try using the file as-is
+      }
+    }
+
+    const url = URL.createObjectURL(blob)
+    const img = new Image()
+    img.onload = () => {
+      const canvas = document.createElement('canvas')
+      canvas.width = img.naturalWidth
+      canvas.height = img.naturalHeight
+      canvas.getContext('2d').drawImage(img, 0, 0)
+      URL.revokeObjectURL(url)
+      onCapture(canvas.toDataURL('image/jpeg', 0.85))
+    }
+    img.onerror = () => {
+      URL.revokeObjectURL(url)
+    }
+    img.src = url
   }
 
   function handleCapture() {
