@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { CameraCapture } from './components/CameraCapture'
 import { StyleSelector } from './components/StyleSelector'
 import { ColourSelector } from './components/ColourSelector'
@@ -6,11 +6,15 @@ import { ModelSelector } from './components/ModelSelector'
 import { ResultDisplay } from './components/ResultDisplay'
 import { generatePreview } from './lib/api'
 import { MODELS } from './lib/constants'
+import { createFaceMaskedImage } from './lib/faceMask'
 import './App.css'
+
+const isDebug = new URLSearchParams(window.location.search).has('debug')
 
 function App() {
   const [step, setStep] = useState('capture')
   const [selfieData, setSelfieData] = useState(null)
+  const [debugMasked, setDebugMasked] = useState(null)
   const [style, setStyle] = useState(null)
   const [moneyPiece, setMoneyPiece] = useState(false)
   const [colour, setColour] = useState(null)
@@ -21,14 +25,21 @@ function App() {
   function handleCapture(dataUrl) {
     setSelfieData(dataUrl)
     setStep('options')
+    if (isDebug) {
+      setDebugMasked('loading')
+      createFaceMaskedImage(dataUrl).then(({ maskedUrl, error }) => {
+        setDebugMasked(error || maskedUrl)
+      })
+    }
   }
 
   async function handleGenerate() {
     setError(null)
     setStep('generating')
     try {
+      const imageToSend = (isDebug && debugMasked?.startsWith('data:')) ? debugMasked : selfieData
       const result = await generatePreview({
-        selfieDataUrl: selfieData,
+        selfieDataUrl: imageToSend,
         style,
         moneyPiece,
         colour,
@@ -58,6 +69,7 @@ function App() {
     setMoneyPiece(false)
     setColour(null)
     setError(null)
+    setDebugMasked(null)
     setStep('capture')
   }
 
@@ -74,6 +86,17 @@ function App() {
         {step === 'options' && (
           <div className="options-screen">
             <img src={selfieData} alt="Your selfie" className="selfie-preview" />
+            {isDebug && debugMasked && (
+              <div className="debug-panel">
+                <span className="selector-label">Debug: Face Mask</span>
+                {debugMasked === 'loading'
+                  ? <p style={{ color: 'var(--color-text-muted)', fontSize: '0.85rem' }}>Generating face mask...</p>
+                  : debugMasked.startsWith('data:')
+                    ? <img src={debugMasked} alt="Face masked" className="selfie-preview" />
+                    : <p style={{ color: 'var(--color-error)', fontSize: '0.85rem' }}>{debugMasked}</p>
+                }
+              </div>
+            )}
             {error && <div className="error-banner">{error}</div>}
             <StyleSelector value={style} moneyPiece={moneyPiece} onChange={setStyle} onMoneyPieceChange={setMoneyPiece} />
             <ColourSelector value={colour} onChange={setColour} />

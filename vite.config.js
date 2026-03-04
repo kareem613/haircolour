@@ -12,6 +12,14 @@ export default defineConfig({
     __APP_VERSION__: JSON.stringify(pkg.version),
     __COMMIT_SHA__: JSON.stringify(commitSha),
   },
+  server: {
+    proxy: {
+      '/api': {
+        target: 'http://localhost:3000',
+        changeOrigin: true,
+      }
+    }
+  },
   plugins: [
     react(),
     VitePWA({
