@@ -1,6 +1,8 @@
 import { useEffect, useMemo, useState } from 'react'
 import './StylistApp.css'
 
+const SYSTEM_ERROR_MESSAGE = 'A system error occurred. Please try again.'
+
 function pathToImageUrl(pathname) {
   return `/api/stylist-image?pathname=${encodeURIComponent(pathname)}`
 }
@@ -20,13 +22,16 @@ export default function StylistApp() {
 
   async function loadSubmissions() {
     setLoadingSubmissions(true)
-    const res = await fetch('/api/stylist-submissions', { credentials: 'include' })
-    const data = await parseJson(res)
-    if (!res.ok) {
-      throw new Error(data.error || `Failed to load submissions (${res.status})`)
+    try {
+      const res = await fetch('/api/stylist-submissions', { credentials: 'include' })
+      if (!res.ok) {
+        throw new Error(SYSTEM_ERROR_MESSAGE)
+      }
+      const data = await parseJson(res)
+      setSubmissions(data.submissions || [])
+    } finally {
+      setLoadingSubmissions(false)
     }
-    setSubmissions(data.submissions || [])
-    setLoadingSubmissions(false)
   }
 
   useEffect(() => {
@@ -39,13 +44,13 @@ export default function StylistApp() {
         setAuthenticated(ok)
         setAuthChecked(true)
         if (ok) {
-          loadSubmissions().catch((err) => setAuthError(err.message))
+          loadSubmissions().catch(() => setAuthError(SYSTEM_ERROR_MESSAGE))
         }
       })
       .catch(() => {
         if (!active) return
         setAuthChecked(true)
-        setAuthError('Unable to verify session')
+        setAuthError(SYSTEM_ERROR_MESSAGE)
       })
 
     return () => {
@@ -65,13 +70,13 @@ export default function StylistApp() {
     })
     const data = await parseJson(res)
     if (!res.ok) {
-      setAuthError(data.error || 'Incorrect code')
+      setAuthError(res.status === 401 ? 'Incorrect code' : SYSTEM_ERROR_MESSAGE)
       return
     }
 
     setAuthenticated(true)
     setCode('')
-    await loadSubmissions().catch((err) => setAuthError(err.message))
+    await loadSubmissions().catch(() => setAuthError(SYSTEM_ERROR_MESSAGE))
   }
 
   const hasSubmissions = useMemo(() => submissions.length > 0, [submissions.length])
