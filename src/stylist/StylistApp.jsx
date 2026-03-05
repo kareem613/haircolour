@@ -11,6 +11,48 @@ async function parseJson(res) {
   return res.json().catch(() => ({}))
 }
 
+const timeFormatter = new Intl.DateTimeFormat(undefined, {
+  hour: 'numeric',
+  minute: '2-digit',
+})
+
+const dateFormatter = new Intl.DateTimeFormat(undefined, {
+  month: 'short',
+  day: 'numeric',
+  year: 'numeric',
+})
+
+const relativeFormatter = new Intl.RelativeTimeFormat(undefined, { numeric: 'auto' })
+
+function formatSubmissionTimestamp(timestamp) {
+  if (!Number.isFinite(timestamp)) return ''
+  const date = new Date(timestamp)
+  if (Number.isNaN(date.getTime())) return ''
+
+  const now = new Date()
+  const diffMs = timestamp - now.getTime()
+  const diffMinutes = Math.round(diffMs / 60000)
+  const absDiffMinutes = Math.abs(diffMinutes)
+
+  if (absDiffMinutes < 90) {
+    return relativeFormatter.format(diffMinutes, 'minute')
+  }
+
+  if (absDiffMinutes < 24 * 60) {
+    const diffHours = Math.round(diffMs / 3600000)
+    return relativeFormatter.format(diffHours, 'hour')
+  }
+
+  const startOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate())
+  const startOfDate = new Date(date.getFullYear(), date.getMonth(), date.getDate())
+  const dayDifference = Math.round((startOfDate.getTime() - startOfToday.getTime()) / 86400000)
+
+  const timeText = timeFormatter.format(date)
+  if (dayDifference === 0) return `Today at ${timeText}`
+  if (dayDifference === -1) return `Yesterday at ${timeText}`
+  return `${dateFormatter.format(date)} at ${timeText}`
+}
+
 export default function StylistApp() {
   const [authChecked, setAuthChecked] = useState(false)
   const [authenticated, setAuthenticated] = useState(false)
@@ -131,7 +173,7 @@ export default function StylistApp() {
         <div className="stylist-submission-list">
           {submissions.map((submission) => (
             <article className="stylist-card" key={submission.id}>
-              <h2>Message</h2>
+              <p className="stylist-meta">{formatSubmissionTimestamp(submission.timestamp)}</p>
               <p>{submission.message || 'No message provided.'}</p>
               <div className="stylist-thumbnail-grid">
                 {submission.imagePaths.map((path) => {

@@ -38,6 +38,11 @@
   gap: 1rem;
 }
 
+.stylist-meta {
+  margin: 0 0 0.5rem;
+  color: var(--color-text-muted);
+}
+
 .stylist-thumbnail-grid {
   margin-top: 0.75rem;
   display: grid;
