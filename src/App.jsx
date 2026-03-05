@@ -89,6 +89,18 @@ function App() {
     }
   }, [selfieData, debugMasked, style, moneyPiece, colour, model])
 
+  async function runWithConcurrency(jobs, limit) {
+    const queue = [...jobs]
+    async function worker() {
+      while (queue.length > 0) {
+        const job = queue.shift()
+        await generateOne(job.key, job.hairstyleId)
+      }
+    }
+    const workers = Array.from({ length: Math.min(limit, jobs.length) }, () => worker())
+    await Promise.all(workers)
+  }
+
   function handleGenerate() {
     setError(null)
     setResults({})
@@ -97,7 +109,7 @@ function App() {
       ? hairstyles.map(hsId => ({ key: hsId, hairstyleId: hsId }))
       : [{ key: '_default', hairstyleId: null }]
 
-    // Initialize all results as generating
+    // Initialize all results as pending
     const initial = {}
     for (const job of jobs) {
       initial[job.key] = { status: 'generating', image: null, rawImage: null, error: null }
@@ -105,10 +117,13 @@ function App() {
     setResults(initial)
     setStep('result')
 
-    // Fire all concurrently
-    for (const job of jobs) {
-      generateOne(job.key, job.hairstyleId)
-    }
+    // Run with max 2 concurrent
+    runWithConcurrency(jobs, 2)
+  }
+
+  function handleRetry(key) {
+    const hairstyleId = key === '_default' ? null : key
+    generateOne(key, hairstyleId)
   }
 
   // Build settings summary for display
@@ -200,6 +215,7 @@ function App() {
             original={selfieData}
             tabs={getResultTabs()}
             settings={getSettings()}
+            onRetry={handleRetry}
             onTryAgain={handleTryAgain}
             onStartOver={handleStartOver}
           />

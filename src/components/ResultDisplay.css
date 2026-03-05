@@ -146,6 +146,11 @@
   color: var(--color-error) !important;
 }
 
+.retry-btn {
+  margin-top: 0.5rem;
+  max-width: 200px;
+}
+
 /* Settings summary pills */
 .settings-summary {
   display: flex;

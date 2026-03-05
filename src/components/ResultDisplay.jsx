@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import './ResultDisplay.css'
 
-export function ResultDisplay({ original, tabs, settings, onTryAgain, onStartOver }) {
+export function ResultDisplay({ original, tabs, settings, onRetry, onTryAgain, onStartOver }) {
   const [activeTab, setActiveTab] = useState(null)
   const [zoomed, setZoomed] = useState(false)
 
@@ -66,6 +66,11 @@ export function ResultDisplay({ original, tabs, settings, onTryAgain, onStartOve
         {active.status === 'error' && (
           <div className="result-loading">
             <p className="result-error-text">{active.error || 'Generation failed'}</p>
+            {onRetry && (
+              <button className="btn btn-primary retry-btn" onClick={() => onRetry(active.key)}>
+                Retry
+              </button>
+            )}
           </div>
         )}
         {active.status === 'done' && active.image && (
