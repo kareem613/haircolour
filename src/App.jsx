@@ -8,7 +8,7 @@ import { ResultDisplay } from './components/ResultDisplay'
 import { generatePreview, refineWithOriginalFace } from './lib/api'
 import { MODELS, HIGHLIGHT_STYLES, COLOURS, HAIRSTYLES } from './lib/constants'
 import { createFaceMaskedImage } from './lib/faceMask'
-import { getCollection, addToCollection, updateInCollection, removeFromCollection } from './lib/collection'
+import { getCollection, addToCollection, updateInCollection, removeFromCollection, submitCollectionShare } from './lib/collection'
 import { MyStylesDrawer } from './components/MyStylesDrawer'
 import './App.css'
 
@@ -227,6 +227,10 @@ function App() {
     setDrawerOpen(false)
   }
 
+  async function handleShareRequest(imageIds, message) {
+    await submitCollectionShare(imageIds, message)
+  }
+
   function handleTryAgain() {
     setResults({})
     setStyle(null)
@@ -316,6 +320,7 @@ function App() {
         replaceCandidate={replaceCandidate}
         onReplace={handleReplace}
         onCancelReplace={() => { setReplaceCandidate(null); setDrawerOpen(false) }}
+        onShareRequest={handleShareRequest}
       />
       <footer className="app-footer">
         {__APP_VERSION__} ({__COMMIT_SHA__})
