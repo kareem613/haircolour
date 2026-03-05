@@ -13,24 +13,24 @@
   margin: 0;
 }
 
-/* Tabs row — wrapping grid */
+/* Tabs row — wrapping grid, 3 per row */
 .result-tabs {
   display: flex;
   flex-wrap: wrap;
-  gap: 2px;
+  gap: 4px;
   background: var(--color-border);
   border-radius: var(--radius-md);
-  padding: 3px;
-  max-width: 100%;
+  padding: 4px;
+  width: 100%;
 }
 
 .result-tab {
   position: relative;
-  padding: 0.4rem 0.75rem;
+  padding: 0.7rem 0.5rem;
   border: none;
   border-radius: calc(var(--radius-md) - 2px);
-  font-size: 0.8rem;
-  font-weight: 500;
+  font-size: 0.95rem;
+  font-weight: 600;
   font-family: inherit;
   cursor: pointer;
   background: transparent;
@@ -41,7 +41,7 @@
   align-items: center;
   justify-content: center;
   gap: 0.35rem;
-  flex: 1 1 auto;
+  flex: 1 1 calc(33.33% - 4px);
   min-width: 0;
 }
 
