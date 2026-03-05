@@ -1,9 +1,10 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import './ResultDisplay.css'
 
 export function ResultDisplay({ original, tabs, settings, onRetry, onTryAgain, onStartOver }) {
   const [activeTab, setActiveTab] = useState(null)
   const [zoomed, setZoomed] = useState(false)
+  const hasAutoSwitched = useRef(false)
 
   // Auto-select first generated tab (not Original)
   useEffect(() => {
@@ -11,6 +12,16 @@ export function ResultDisplay({ original, tabs, settings, onRetry, onTryAgain, o
       setActiveTab(tabs[0].key)
     }
   }, [tabs, activeTab])
+
+  // Auto-switch to the first tab that completes
+  useEffect(() => {
+    if (hasAutoSwitched.current) return
+    const firstDone = tabs.find(t => t.status === 'done')
+    if (firstDone) {
+      setActiveTab(firstDone.key)
+      hasAutoSwitched.current = true
+    }
+  }, [tabs])
 
   const allTabs = [
     { key: '_original', label: 'Original', status: 'done', image: original },
