@@ -1,7 +1,9 @@
+import { useState } from 'react'
 import heic2any from 'heic2any'
 import './CameraCapture.css'
 
-export function CameraCapture({ onCapture }) {
+export function CameraCapture({ onCapture, collection = [] }) {
+  const [zoomedItem, setZoomedItem] = useState(null)
   async function handleFileChange(e) {
     const file = e.target.files?.[0]
     if (!file) return
@@ -52,6 +54,22 @@ export function CameraCapture({ onCapture }) {
           <li>Select multiple hairstyles to compare them side by side</li>
         </ul>
       </div>
+      {collection.length > 0 && (
+        <div className="saved-strip">
+          <span className="saved-strip-label">My Styles</span>
+          <div className="saved-strip-scroll">
+            {collection.map(item => (
+              <img
+                key={item.id}
+                src={item.image}
+                alt={`${item.style} ${item.colour}`}
+                className="saved-strip-thumb"
+                onClick={() => setZoomedItem(item)}
+              />
+            ))}
+          </div>
+        </div>
+      )}
       <div className="capture-options">
         <label className="btn btn-primary file-input-label">
           Take Photo
@@ -62,6 +80,11 @@ export function CameraCapture({ onCapture }) {
           <input type="file" accept="image/*" onChange={handleFileChange} hidden />
         </label>
       </div>
+      {zoomedItem && (
+        <div className="saved-zoom-overlay" onClick={() => setZoomedItem(null)}>
+          <img src={zoomedItem.image} alt={`${zoomedItem.style} ${zoomedItem.colour}`} className="saved-zoom-image" />
+        </div>
+      )}
     </div>
   )
 }

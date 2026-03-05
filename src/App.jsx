@@ -8,6 +8,8 @@ import { ResultDisplay } from './components/ResultDisplay'
 import { generatePreview, refineWithOriginalFace } from './lib/api'
 import { MODELS, HIGHLIGHT_STYLES, COLOURS, HAIRSTYLES } from './lib/constants'
 import { createFaceMaskedImage } from './lib/faceMask'
+import { getCollection, addToCollection, updateInCollection, removeFromCollection } from './lib/collection'
+import { MyStylesDrawer } from './components/MyStylesDrawer'
 import './App.css'
 
 const isDebug = new URLSearchParams(window.location.search).has('debug')
@@ -24,6 +26,11 @@ function App() {
   // results: { [key]: { status: 'generating'|'refining'|'done'|'error', image, rawImage, error } }
   const [results, setResults] = useState({})
   const [error, setError] = useState(null)
+  const [feedback, setFeedback] = useState({})
+  const [savedIds, setSavedIds] = useState({})
+  const [collection, setCollection] = useState(() => getCollection())
+  const [drawerOpen, setDrawerOpen] = useState(false)
+  const [replaceCandidate, setReplaceCandidate] = useState(null)
 
   function handleCapture(dataUrl) {
     setSelfieData(dataUrl)
@@ -146,6 +153,80 @@ function App() {
     })
   }
 
+  async function handleFeedbackChange(tabKey, feedbackKey) {
+    const current = feedback[tabKey]
+    // null feedbackKey = explicit clear; same key = toggle off; else = set new
+    const next = feedbackKey === null ? null : (current === feedbackKey ? null : feedbackKey)
+
+    setFeedback(prev => ({ ...prev, [tabKey]: next }))
+
+    const wasSaved = current === 'love' || current === 'maybe'
+    const willSave = next === 'love' || next === 'maybe'
+
+    if (wasSaved && willSave && savedIds[tabKey]) {
+      // Switching between love ↔ maybe — just update the feedback field in place
+      updateInCollection(savedIds[tabKey], { feedback: next })
+      setCollection(getCollection())
+      return
+    }
+
+    if (wasSaved && !willSave && savedIds[tabKey]) {
+      // Deselecting or switching to notforme/looksoff — remove from collection
+      await removeFromCollection(savedIds[tabKey])
+      setSavedIds(prev => { const copy = { ...prev }; delete copy[tabKey]; return copy })
+      setCollection(getCollection())
+      return
+    }
+
+    if (!wasSaved && willSave) {
+      // New save — add to collection (fill next empty slot)
+      const tab = Object.entries(results).find(([k]) => k === tabKey)
+      if (!tab || !tab[1].image) return
+      const settingsInfo = getSettings()
+      const item = {
+        image: tab[1].image,
+        style: settingsInfo.style,
+        colour: settingsInfo.colour,
+        moneyPiece: settingsInfo.moneyPiece,
+        feedback: next,
+      }
+      const currentCollection = getCollection()
+      if (currentCollection.length >= 6) {
+        // Collection full — open replace mode
+        setReplaceCandidate(item)
+        setDrawerOpen(true)
+      } else {
+        const result = await addToCollection(item)
+        if (result.success) {
+          setSavedIds(prev => ({ ...prev, [tabKey]: result.id }))
+        }
+        setCollection(getCollection())
+      }
+    }
+  }
+
+  async function handleRemoveFromCollection(id) {
+    await removeFromCollection(id)
+    setCollection(getCollection())
+    // Clean up savedIds reference
+    setSavedIds(prev => {
+      const copy = { ...prev }
+      for (const key of Object.keys(copy)) {
+        if (copy[key] === id) delete copy[key]
+      }
+      return copy
+    })
+  }
+
+  async function handleReplace(oldId) {
+    if (!replaceCandidate) return
+    await removeFromCollection(oldId)
+    await addToCollection(replaceCandidate)
+    setReplaceCandidate(null)
+    setCollection(getCollection())
+    setDrawerOpen(false)
+  }
+
   function handleTryAgain() {
     setResults({})
     setStyle(null)
@@ -153,6 +234,8 @@ function App() {
     setColour(null)
     setHairstyles([])
     setError(null)
+    setFeedback({})
+    setSavedIds({})
     setStep('options')
   }
 
@@ -165,6 +248,8 @@ function App() {
     setHairstyles([])
     setError(null)
     setDebugMasked(null)
+    setFeedback({})
+    setSavedIds({})
     setStep('capture')
   }
 
@@ -175,7 +260,7 @@ function App() {
       </header>
       <main className="app-body">
         {step === 'capture' && (
-          <CameraCapture onCapture={handleCapture} />
+          <CameraCapture onCapture={handleCapture} collection={collection} />
         )}
 
         {step === 'options' && (
@@ -215,12 +300,23 @@ function App() {
             original={selfieData}
             tabs={getResultTabs()}
             settings={getSettings()}
+            feedback={feedback}
+            onFeedbackChange={handleFeedbackChange}
             onRetry={handleRetry}
             onTryAgain={handleTryAgain}
             onStartOver={handleStartOver}
           />
         )}
       </main>
+      <MyStylesDrawer
+        collection={collection}
+        open={drawerOpen}
+        onToggle={() => setDrawerOpen(o => !o)}
+        onRemove={handleRemoveFromCollection}
+        replaceCandidate={replaceCandidate}
+        onReplace={handleReplace}
+        onCancelReplace={() => { setReplaceCandidate(null); setDrawerOpen(false) }}
+      />
       <footer className="app-footer">
         {__APP_VERSION__} ({__COMMIT_SHA__})
       </footer>
