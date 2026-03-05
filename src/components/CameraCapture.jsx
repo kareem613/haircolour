@@ -36,7 +36,7 @@ export function CameraCapture({ onCapture }) {
     <div className="camera-capture">
       <div className="capture-prompt">
         <h2>Welcome to Guisselle's</h2>
-        <p>Upload a photo and preview different highlights and hairstyles before your appointment</p>
+        <p>Try out highlights and styles before your next appointment</p>
         <ul className="capture-tips">
           <li>Use a photo where your hair is clearly visible</li>
           <li>Good, even lighting works best</li>
