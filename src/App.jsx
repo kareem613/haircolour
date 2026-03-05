@@ -10,10 +10,10 @@ import { MODELS, HIGHLIGHT_STYLES, COLOURS, HAIRSTYLES } from './lib/constants'
 import { createFaceMaskedImage } from './lib/faceMask'
 import { getCollection, addToCollection, updateInCollection, removeFromCollection, submitCollectionShare } from './lib/collection'
 import { MyStylesDrawer } from './components/MyStylesDrawer'
-import bannerCircle from '../scratch/banner-circle.png'
 import './App.css'
 
 const isDebug = new URLSearchParams(window.location.search).has('debug')
+const bannerCircle = '/banner-circle.png'
 
 function App() {
   const [step, setStep] = useState('capture')
