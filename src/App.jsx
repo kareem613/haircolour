@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { CameraCapture } from './components/CameraCapture'
 import { StyleSelector } from './components/StyleSelector'
 import { HairstyleSelector } from './components/HairstyleSelector'
@@ -6,7 +6,7 @@ import { ColourSelector } from './components/ColourSelector'
 import { ModelSelector } from './components/ModelSelector'
 import { ResultDisplay } from './components/ResultDisplay'
 import { generatePreview, refineWithOriginalFace } from './lib/api'
-import { MODELS } from './lib/constants'
+import { MODELS, HIGHLIGHT_STYLES, COLOURS, HAIRSTYLES } from './lib/constants'
 import { createFaceMaskedImage } from './lib/faceMask'
 import './App.css'
 
@@ -19,11 +19,10 @@ function App() {
   const [style, setStyle] = useState(null)
   const [moneyPiece, setMoneyPiece] = useState(false)
   const [colour, setColour] = useState(null)
-  const [hairstyle, setHairstyle] = useState(null)
+  const [hairstyles, setHairstyles] = useState([])
   const [model, setModel] = useState(MODELS[MODELS.length - 1].id)
-  const [resultImage, setResultImage] = useState(null)
-  const [rawGeminiImage, setRawGeminiImage] = useState(null)
-  const [generatingStatus, setGeneratingStatus] = useState('')
+  // results: { [key]: { status: 'generating'|'refining'|'done'|'error', image, rawImage, error } }
+  const [results, setResults] = useState({})
   const [error, setError] = useState(null)
 
   function handleCapture(dataUrl) {
@@ -59,64 +58,96 @@ function App() {
     }
   }, [])
 
-  async function handleGenerate() {
-    setError(null)
-    setStep('generating')
+  const generateOne = useCallback(async (key, hairstyleId) => {
+    const imageToSend = (isDebug && debugMasked?.startsWith('data:')) ? debugMasked : selfieData
+
+    setResults(prev => ({ ...prev, [key]: { status: 'generating', image: null, rawImage: null, error: null } }))
+
     try {
-      // Pass 1: Generate hair colour change
-      setGeneratingStatus('Generating hair preview...')
-      const imageToSend = (isDebug && debugMasked?.startsWith('data:')) ? debugMasked : selfieData
+      // Pass 1: Generate
       const result = await generatePreview({
         selfieDataUrl: imageToSend,
         style,
         moneyPiece,
         colour,
-        hairstyle,
+        hairstyle: hairstyleId,
         model
       })
-      setRawGeminiImage(result.imageUrl)
 
-      // Pass 2: Refine — ask Gemini to seamlessly merge original face into generated image
-      const touchUpPhrases = [
-        'Adding the finishing touches...',
-        'Blending your highlights just right...',
-        'Putting on the final polish...',
-        'Perfecting your new look...',
-        'Making sure every strand is flawless...',
-      ]
-      setGeneratingStatus(touchUpPhrases[Math.floor(Math.random() * touchUpPhrases.length)])
+      setResults(prev => ({ ...prev, [key]: { ...prev[key], status: 'refining', rawImage: result.imageUrl } }))
+
+      // Pass 2: Refine
       const refined = await refineWithOriginalFace({
         originalDataUrl: selfieData,
         generatedDataUrl: result.imageUrl,
         model
       })
-      setResultImage(refined.imageUrl)
-      setStep('result')
+
+      setResults(prev => ({ ...prev, [key]: { ...prev[key], status: 'done', image: refined.imageUrl } }))
     } catch (err) {
-      setError(err.message)
-      setStep('options')
+      setResults(prev => ({ ...prev, [key]: { ...prev[key], status: 'error', error: err.message } }))
+    }
+  }, [selfieData, debugMasked, style, moneyPiece, colour, model])
+
+  function handleGenerate() {
+    setError(null)
+    setResults({})
+
+    const jobs = hairstyles.length > 0
+      ? hairstyles.map(hsId => ({ key: hsId, hairstyleId: hsId }))
+      : [{ key: '_default', hairstyleId: null }]
+
+    // Initialize all results as generating
+    const initial = {}
+    for (const job of jobs) {
+      initial[job.key] = { status: 'generating', image: null, rawImage: null, error: null }
+    }
+    setResults(initial)
+    setStep('result')
+
+    // Fire all concurrently
+    for (const job of jobs) {
+      generateOne(job.key, job.hairstyleId)
     }
   }
 
+  // Build settings summary for display
+  function getSettings() {
+    const styleInfo = HIGHLIGHT_STYLES.find(s => s.id === style)
+    const colourInfo = COLOURS.find(c => c.id === colour)
+    return {
+      style: styleInfo?.label || style,
+      colour: colourInfo?.label || colour,
+      moneyPiece,
+    }
+  }
+
+  // Build tab list from results
+  function getResultTabs() {
+    return Object.entries(results).map(([key, data]) => {
+      const hsInfo = HAIRSTYLES.find(h => h.id === key)
+      const label = hsInfo?.label || (key === '_default' ? (HIGHLIGHT_STYLES.find(s => s.id === style)?.label || 'Result') : key)
+      return { key, label, ...data }
+    })
+  }
+
   function handleTryAgain() {
-    setResultImage(null)
-    setRawGeminiImage(null)
+    setResults({})
     setStyle(null)
     setMoneyPiece(false)
     setColour(null)
-    setHairstyle(null)
+    setHairstyles([])
     setError(null)
     setStep('options')
   }
 
   function handleStartOver() {
     setSelfieData(null)
-    setResultImage(null)
-    setRawGeminiImage(null)
+    setResults({})
     setStyle(null)
     setMoneyPiece(false)
     setColour(null)
-    setHairstyle(null)
+    setHairstyles([])
     setError(null)
     setDebugMasked(null)
     setStep('capture')
@@ -149,14 +180,14 @@ function App() {
             {error && <div className="error-banner">{error}</div>}
             <StyleSelector value={style} moneyPiece={moneyPiece} onChange={setStyle} onMoneyPieceChange={setMoneyPiece} />
             <ColourSelector value={colour} onChange={setColour} />
-            <HairstyleSelector value={hairstyle} onChange={setHairstyle} />
+            <HairstyleSelector value={hairstyles} onChange={setHairstyles} />
             {isDebug && <ModelSelector value={model} onChange={setModel} />}
             <button
               className="btn btn-primary"
               disabled={!style || !colour}
               onClick={handleGenerate}
             >
-              Generate Preview
+              Generate Preview{hairstyles.length > 1 ? ` (${hairstyles.length} styles)` : ''}
             </button>
             <button className="btn btn-ghost" onClick={handleStartOver}>
               Retake Selfie
@@ -164,19 +195,11 @@ function App() {
           </div>
         )}
 
-        {step === 'generating' && (
-          <div className="generating-screen">
-            <div className="spinner" />
-            <p>{generatingStatus || 'Creating your preview...'}</p>
-          </div>
-        )}
-
         {step === 'result' && (
           <ResultDisplay
             original={selfieData}
-            result={resultImage}
-            rawGemini={isDebug ? rawGeminiImage : null}
-            masked={isDebug ? debugMasked : null}
+            tabs={getResultTabs()}
+            settings={getSettings()}
             onTryAgain={handleTryAgain}
             onStartOver={handleStartOver}
           />

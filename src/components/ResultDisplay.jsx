@@ -1,47 +1,94 @@
-import { useState, useMemo } from 'react'
+import { useState, useEffect } from 'react'
 import './ResultDisplay.css'
 
-export function ResultDisplay({ original, result, rawGemini, masked, onTryAgain, onStartOver }) {
-  const [activeView, setActiveView] = useState('result')
+export function ResultDisplay({ original, tabs, settings, onTryAgain, onStartOver }) {
+  const [activeTab, setActiveTab] = useState(null)
   const [zoomed, setZoomed] = useState(false)
 
-  const isDebug = !!(rawGemini || masked)
-
-  const views = useMemo(() => {
-    const list = [
-      { id: 'result', label: 'Final', src: result },
-      { id: 'original', label: 'Original', src: original },
-    ]
-    if (isDebug) {
-      if (rawGemini) list.push({ id: 'raw', label: 'AI Output', src: rawGemini })
-      if (masked?.startsWith('data:')) list.push({ id: 'masked', label: 'Face Mask', src: masked })
+  // Auto-select first tab, and switch to a newly-completed tab if current is still loading
+  useEffect(() => {
+    if (!activeTab && tabs.length > 0) {
+      setActiveTab(tabs[0].key)
     }
-    return list
-  }, [original, result, rawGemini, masked, isDebug])
+  }, [tabs, activeTab])
 
-  const activeImage = views.find(v => v.id === activeView) || views[0]
+  const allTabs = [
+    ...tabs,
+    { key: '_original', label: 'Original', status: 'done', image: original },
+  ]
+
+  const active = allTabs.find(t => t.key === activeTab) || allTabs[0]
+
+  function getStatusIcon(tab) {
+    if (tab.key === '_original') return null
+    if (tab.status === 'done') return ' ✓'
+    if (tab.status === 'error') return ' ✗'
+    return null // spinner handled by CSS
+  }
+
+  function isLoading(tab) {
+    return tab.status === 'generating' || tab.status === 'refining'
+  }
 
   return (
     <div className="result-display">
       <h2 className="result-title">Your New Look</h2>
-      <div className="result-toggle">
-        {views.map(v => (
+
+      <div className="result-tabs">
+        {allTabs.map(tab => (
           <button
-            key={v.id}
-            className={`toggle-btn ${activeView === v.id ? 'active' : ''}`}
-            onClick={() => setActiveView(v.id)}
+            key={tab.key}
+            className={`result-tab ${activeTab === tab.key ? 'active' : ''} ${isLoading(tab) ? 'loading' : ''} ${tab.status === 'error' ? 'error' : ''}`}
+            onClick={() => setActiveTab(tab.key)}
           >
-            {v.label}
+            {tab.label}{getStatusIcon(tab)}
+            {isLoading(tab) && <span className="tab-spinner" />}
           </button>
         ))}
       </div>
+
       <div
         className={`result-image-container ${zoomed ? 'zoomed' : ''}`}
-        onClick={() => setZoomed(z => !z)}
+        onClick={() => active.image && setZoomed(z => !z)}
       >
-        <img src={activeImage.src} alt={activeImage.label} className="result-image" />
-        {!zoomed && <span className="zoom-hint">Tap to zoom</span>}
+        {active.status === 'generating' && (
+          <div className="result-loading">
+            <div className="spinner" />
+            <p>Generating preview...</p>
+          </div>
+        )}
+        {active.status === 'refining' && (
+          <div className="result-loading">
+            <div className="spinner" />
+            <p>Adding finishing touches...</p>
+          </div>
+        )}
+        {active.status === 'error' && (
+          <div className="result-loading">
+            <p className="result-error-text">{active.error || 'Generation failed'}</p>
+          </div>
+        )}
+        {active.status === 'done' && active.image && (
+          <>
+            <img src={active.image} alt={active.label} className="result-image" />
+            {!zoomed && <span className="zoom-hint">Tap to zoom</span>}
+          </>
+        )}
       </div>
+
+      {active.key !== '_original' && (
+        <div className="settings-summary">
+          <span className="settings-pill">{settings.style}</span>
+          <span className="settings-pill">{settings.colour}</span>
+          {active.label && active.key !== '_default' && (
+            <span className="settings-pill">{active.label}</span>
+          )}
+          {settings.moneyPiece && (
+            <span className="settings-pill">Money Piece</span>
+          )}
+        </div>
+      )}
+
       <div className="result-actions">
         <button className="btn btn-primary" onClick={onTryAgain}>Try Different Style</button>
         <button className="btn btn-secondary" onClick={onStartOver}>New Selfie</button>
