@@ -46,6 +46,22 @@ export function buildPrompt({ style, moneyPiece, colour, hairstyle }) {
     ? `- Reshape the hair into a ${hairstyleName} style while applying the colour treatment`
     : '- Do NOT change the hairstyle, cut, parting, length, texture, or volume — only add colour highlights'
 
+  const isShortStyle = hairstyleInfo?.short === true
+
+  let negativePrompt = ''
+  if (hairstyleName) {
+    negativePrompt = `\n\nNEGATIVE PROMPT — The following are UNACCEPTABLE in the result:
+- Any remnant of the original hairstyle length or shape showing through
+- Mixed hair lengths — the ENTIRE head of hair must be the requested ${hairstyleName} style`
+    if (isShortStyle) {
+      negativePrompt += `
+- ANY long hair remaining — if the original hair is long, ALL of it must be replaced with the short ${hairstyleName} style
+- Long strands, wisps, or sections hanging below the ${hairstyleName} cut line
+- Hair appearing on shoulders or back that contradicts the short style
+- A short style layered on top with long hair still visible underneath`
+    }
+  }
+
   return `You are a professional hair stylist and colourist assistant. Edit this selfie photo to show how the person would look with the following hair treatment applied:
 
 Style: ${styleDescription}
@@ -61,5 +77,5 @@ ${instructions}
 ${hairstyleRule}
 - The highlights should be blended naturally with the hair
 - Preserve the lighting and photo quality of the original image
-- Output ONLY the edited photo with no text overlay or watermarks`
+- Output ONLY the edited photo with no text overlay or watermarks${negativePrompt}`
 }

@@ -16,13 +16,13 @@ export const COLOURS = [
 ]
 
 export const HAIRSTYLES = [
-  { id: 'beach-waves', label: 'Beach Waves', description: 'Loose, tousled waves with a relaxed feel' },
-  { id: 'short-hair', label: 'Short Hair', description: 'Cropped above the ears' },
-  { id: 'bob', label: 'Bob', description: 'Classic chin-length cut' },
-  { id: 'pixie-cut', label: 'Pixie Cut', description: 'Short, close-cropped style' },
-  { id: 'long-layers', label: 'Long Layers', description: 'Long hair with layered movement' },
-  { id: 'short-layers', label: 'Short Layers', description: 'Short hair with textured layers' },
-  { id: 'one-length', label: 'One Length', description: 'Even, blunt cut all around' },
+  { id: 'beach-waves', label: 'Beach Waves', description: 'Loose, tousled waves with a relaxed feel', short: false },
+  { id: 'short-hair', label: 'Short Hair', description: 'Cropped above the ears', short: true },
+  { id: 'bob', label: 'Bob', description: 'Classic chin-length cut', short: true },
+  { id: 'pixie-cut', label: 'Pixie Cut', description: 'Short, close-cropped style', short: true },
+  { id: 'long-layers', label: 'Long Layers', description: 'Long hair with layered movement', short: false },
+  { id: 'short-layers', label: 'Short Layers', description: 'Short hair with textured layers', short: true },
+  { id: 'one-length', label: 'One Length', description: 'Even, blunt cut all around', short: false },
 ]
 
 export const MODELS = [
