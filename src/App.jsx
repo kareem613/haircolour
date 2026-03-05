@@ -74,7 +74,14 @@ function App() {
       setRawGeminiImage(result.imageUrl)
 
       // Pass 2: Refine — ask Gemini to seamlessly merge original face into generated image
-      setGeneratingStatus('Refining face...')
+      const touchUpPhrases = [
+        'Adding the finishing touches...',
+        'Blending your highlights just right...',
+        'Putting on the final polish...',
+        'Perfecting your new look...',
+        'Making sure every strand is flawless...',
+      ]
+      setGeneratingStatus(touchUpPhrases[Math.floor(Math.random() * touchUpPhrases.length)])
       const refined = await refineWithOriginalFace({
         originalDataUrl: selfieData,
         generatedDataUrl: result.imageUrl,
