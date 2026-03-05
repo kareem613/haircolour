@@ -1,9 +1,15 @@
-import { getStylistPasscode, setStylistSession, clearStylistSession, isStylistAuthenticated } from './_stylistAuth.js'
+import {
+  getStylistPasscode,
+  getStylistPasscodeConfigError,
+  setStylistSession,
+  clearStylistSession,
+  isStylistAuthenticated,
+} from './_stylistAuth.js'
 
 export default async function handler(req, res) {
   const passcode = getStylistPasscode()
   if (!passcode) {
-    return res.status(500).json({ error: 'Stylist access code is not configured' })
+    return res.status(500).json({ error: getStylistPasscodeConfigError() })
   }
 
   if (req.method === 'GET') {

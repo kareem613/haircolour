@@ -1,5 +1,5 @@
 import { get, list } from '@vercel/blob'
-import { getStylistPasscode, isStylistAuthenticated } from './_stylistAuth.js'
+import { getStylistPasscode, getStylistPasscodeConfigError, isStylistAuthenticated } from './_stylistAuth.js'
 
 const MAX_SUBMISSIONS = 40
 
@@ -26,7 +26,7 @@ export default async function handler(req, res) {
 
   const passcode = getStylistPasscode()
   if (!passcode) {
-    return res.status(500).json({ error: 'Stylist access code is not configured' })
+    return res.status(500).json({ error: getStylistPasscodeConfigError() })
   }
 
   if (!isStylistAuthenticated(req, passcode)) {

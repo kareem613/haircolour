@@ -65,6 +65,10 @@ export function getStylistPasscode() {
   return passcode
 }
 
+export function getStylistPasscodeConfigError() {
+  return 'Stylist access code is not configured. In Vercel, set STYLIST_PORTAL_CODE to a 5-digit value in Project Settings -> Environment Variables, then redeploy.'
+}
+
 export function setStylistSession(res, passcode) {
   const token = signPayload({ exp: Date.now() + SESSION_MAX_AGE_SECONDS * 1000 }, passcode)
   const secure = process.env.NODE_ENV === 'production' ? '; Secure' : ''
