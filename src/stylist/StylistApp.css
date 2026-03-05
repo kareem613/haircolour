@@ -1,0 +1,78 @@
+.stylist-screen {
+  width: min(980px, 100%);
+  margin: 0 auto;
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.stylist-card {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: 1rem;
+}
+
+.stylist-login {
+  margin-top: 0.75rem;
+  display: flex;
+  gap: 0.75rem;
+}
+
+.stylist-login input {
+  flex: 1;
+  min-height: 46px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: 0 0.75rem;
+  font-size: 1.1rem;
+}
+
+.stylist-error {
+  color: var(--color-error);
+}
+
+.stylist-submission-list {
+  display: grid;
+  gap: 1rem;
+}
+
+.stylist-thumbnail-grid {
+  margin-top: 0.75rem;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(88px, 1fr));
+  gap: 0.5rem;
+}
+
+.stylist-thumb {
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: transparent;
+  overflow: hidden;
+  padding: 0;
+  cursor: zoom-in;
+}
+
+.stylist-thumb img {
+  width: 100%;
+  aspect-ratio: 1/1;
+  object-fit: cover;
+  display: block;
+}
+
+.stylist-modal {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.78);
+  display: grid;
+  place-items: center;
+  padding: 1rem;
+  z-index: 100;
+}
+
+.stylist-modal-image {
+  max-width: min(960px, 100%);
+  max-height: 90vh;
+  border-radius: var(--radius-md);
+}
