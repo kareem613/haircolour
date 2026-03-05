@@ -173,8 +173,10 @@ export default function StylistApp() {
         <div className="stylist-submission-list">
           {submissions.map((submission) => (
             <article className="stylist-card" key={submission.id}>
-              <p className="stylist-meta">{formatSubmissionTimestamp(submission.timestamp)}</p>
-              <p>{submission.message || 'No message provided.'}</p>
+              <div className="stylist-message-row">
+                <p>{submission.message || 'No message provided.'}</p>
+                <p className="stylist-meta">{formatSubmissionTimestamp(submission.timestamp)}</p>
+              </div>
               <div className="stylist-thumbnail-grid">
                 {submission.imagePaths.map((path) => {
                   const src = pathToImageUrl(path)
