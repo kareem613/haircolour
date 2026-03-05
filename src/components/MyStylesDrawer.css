@@ -1,0 +1,203 @@
+/* Collapsed bar */
+.drawer-bar {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 50;
+  background: var(--color-surface);
+  border-top: 1px solid var(--color-border);
+  text-align: center;
+  padding: 0.6rem 1rem;
+  cursor: pointer;
+  user-select: none;
+}
+
+.drawer-bar-label {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--color-text-muted);
+  letter-spacing: 0.04em;
+}
+
+/* Expanded overlay */
+.drawer-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: flex-end;
+}
+
+.drawer-panel {
+  width: 100%;
+  max-width: 480px;
+  margin: 0 auto;
+  background: var(--color-bg);
+  border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+  padding: 1rem 1rem 1.5rem;
+  max-height: 85vh;
+  overflow-y: auto;
+}
+
+.drawer-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.drawer-title {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--color-text);
+}
+
+.drawer-close {
+  background: none;
+  border: none;
+  font-size: 0.85rem;
+  color: var(--color-accent);
+  cursor: pointer;
+  font-family: inherit;
+  font-weight: 500;
+  padding: 0.25rem 0.5rem;
+}
+
+/* Grid of 5 slots */
+.drawer-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.6rem;
+}
+
+.drawer-slot {
+  position: relative;
+  border-radius: var(--radius-md);
+  overflow: hidden;
+}
+
+.drawer-slot.filled {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+}
+
+.drawer-slot.empty {
+  border: 2px dashed var(--color-border);
+  background: transparent;
+}
+
+.drawer-slot.replaceable {
+  border-color: var(--color-accent);
+  cursor: pointer;
+}
+
+.drawer-slot-image-wrap {
+  position: relative;
+  cursor: pointer;
+}
+
+.drawer-slot-image {
+  width: 100%;
+  aspect-ratio: 3/4;
+  object-fit: cover;
+  display: block;
+}
+
+.replace-badge {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: rgba(184, 134, 11, 0.85);
+  color: #fff;
+  font-size: 0.65rem;
+  font-weight: 600;
+  text-align: center;
+  padding: 0.25rem;
+}
+
+.drawer-slot-info {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.35rem 0.4rem;
+  flex-wrap: wrap;
+}
+
+.drawer-slot-emoji {
+  font-size: 0.85rem;
+  line-height: 1;
+}
+
+.drawer-slot-text {
+  font-size: 0.65rem;
+  color: var(--color-text-muted);
+}
+
+.drawer-slot-badge {
+  font-size: 0.55rem;
+  font-weight: 700;
+  background: var(--color-accent-bg);
+  color: var(--color-accent);
+  padding: 0.1rem 0.3rem;
+  border-radius: 4px;
+}
+
+.drawer-slot-remove {
+  position: absolute;
+  top: 0.2rem;
+  right: 0.2rem;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  border: none;
+  background: rgba(0, 0, 0, 0.5);
+  color: #fff;
+  font-size: 0.85rem;
+  line-height: 1;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Empty slot placeholder */
+.drawer-slot-placeholder {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  aspect-ratio: 3/4;
+  gap: 0.25rem;
+}
+
+.placeholder-icon {
+  font-size: 1.5rem;
+  color: var(--color-border);
+  line-height: 1;
+}
+
+.placeholder-text {
+  font-size: 0.65rem;
+  color: var(--color-text-muted);
+}
+
+/* Zoom overlay */
+.drawer-zoom-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 300;
+  background: rgba(0, 0, 0, 0.9);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: zoom-out;
+}
+
+.drawer-zoom-image {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+}
