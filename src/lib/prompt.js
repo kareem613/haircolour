@@ -1,5 +1,21 @@
 import { HIGHLIGHT_STYLES, MONEY_PIECE, COLOURS } from './constants'
 
+export function buildRefinePrompt() {
+  return `You are given two images:
+1. The ORIGINAL selfie photo (first image)
+2. An AI-generated version with new hair highlights (second image)
+
+Your task: Produce a final image that uses the HAIR and BACKGROUND from the second image, but with the FACE from the first image perfectly preserved.
+
+Requirements:
+- The person's face, skin tone, expression, and all facial features must be IDENTICAL to the original first image
+- The hair colour/highlights from the second image must be kept exactly as-is
+- The transition between face and hair must be completely seamless and natural — no visible edges, colour shifts, or artifacts
+- Clothing and background should match the second image
+- The result should look like a single natural photograph
+- Output ONLY the final photo with no text overlay or watermarks`
+}
+
 export function buildPrompt({ style, moneyPiece, colour }) {
   const styleInfo = HIGHLIGHT_STYLES.find(s => s.id === style)
   const colourInfo = COLOURS.find(c => c.id === colour)

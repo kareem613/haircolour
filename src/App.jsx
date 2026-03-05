@@ -4,9 +4,9 @@ import { StyleSelector } from './components/StyleSelector'
 import { ColourSelector } from './components/ColourSelector'
 import { ModelSelector } from './components/ModelSelector'
 import { ResultDisplay } from './components/ResultDisplay'
-import { generatePreview } from './lib/api'
+import { generatePreview, refineWithOriginalFace } from './lib/api'
 import { MODELS } from './lib/constants'
-import { createFaceMaskedImage, combineWithOriginalFace } from './lib/faceMask'
+import { createFaceMaskedImage } from './lib/faceMask'
 import './App.css'
 
 const isDebug = new URLSearchParams(window.location.search).has('debug')
@@ -20,6 +20,8 @@ function App() {
   const [colour, setColour] = useState(null)
   const [model, setModel] = useState(MODELS[MODELS.length - 1].id)
   const [resultImage, setResultImage] = useState(null)
+  const [rawGeminiImage, setRawGeminiImage] = useState(null)
+  const [generatingStatus, setGeneratingStatus] = useState('')
   const [error, setError] = useState(null)
 
   function handleCapture(dataUrl) {
@@ -33,10 +35,34 @@ function App() {
     }
   }
 
+  // Auto-load debug selfie
+  useEffect(() => {
+    if (isDebug && !selfieData) {
+      fetch('/debug-selfie.jpg')
+        .then(r => r.blob())
+        .then(blob => {
+          const reader = new FileReader()
+          reader.onload = () => {
+            const dataUrl = reader.result
+            setSelfieData(dataUrl)
+            setStep('options')
+            setDebugMasked('loading')
+            createFaceMaskedImage(dataUrl).then(({ maskedUrl, error }) => {
+              setDebugMasked(error || maskedUrl)
+            })
+          }
+          reader.readAsDataURL(blob)
+        })
+        .catch(() => {})
+    }
+  }, [])
+
   async function handleGenerate() {
     setError(null)
     setStep('generating')
     try {
+      // Pass 1: Generate hair colour change
+      setGeneratingStatus('Generating hair preview...')
       const imageToSend = (isDebug && debugMasked?.startsWith('data:')) ? debugMasked : selfieData
       const result = await generatePreview({
         selfieDataUrl: imageToSend,
@@ -45,9 +71,16 @@ function App() {
         colour,
         model
       })
-      // Combine: Gemini's hair + original face
-      const combined = await combineWithOriginalFace(selfieData, result.imageUrl)
-      setResultImage(combined)
+      setRawGeminiImage(result.imageUrl)
+
+      // Pass 2: Refine — ask Gemini to seamlessly merge original face into generated image
+      setGeneratingStatus('Refining face...')
+      const refined = await refineWithOriginalFace({
+        originalDataUrl: selfieData,
+        generatedDataUrl: result.imageUrl,
+        model
+      })
+      setResultImage(refined.imageUrl)
       setStep('result')
     } catch (err) {
       setError(err.message)
@@ -57,6 +90,7 @@ function App() {
 
   function handleTryAgain() {
     setResultImage(null)
+    setRawGeminiImage(null)
     setStyle(null)
     setMoneyPiece(false)
     setColour(null)
@@ -67,6 +101,7 @@ function App() {
   function handleStartOver() {
     setSelfieData(null)
     setResultImage(null)
+    setRawGeminiImage(null)
     setStyle(null)
     setMoneyPiece(false)
     setColour(null)
@@ -119,7 +154,7 @@ function App() {
         {step === 'generating' && (
           <div className="generating-screen">
             <div className="spinner" />
-            <p>Creating your preview...</p>
+            <p>{generatingStatus || 'Creating your preview...'}</p>
           </div>
         )}
 
@@ -127,6 +162,8 @@ function App() {
           <ResultDisplay
             original={selfieData}
             result={resultImage}
+            rawGemini={isDebug ? rawGeminiImage : null}
+            masked={isDebug ? debugMasked : null}
             onTryAgain={handleTryAgain}
             onStartOver={handleStartOver}
           />

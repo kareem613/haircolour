@@ -1,35 +1,45 @@
-import { useState } from 'react'
+import { useState, useMemo } from 'react'
 import './ResultDisplay.css'
 
-export function ResultDisplay({ original, result, onTryAgain, onStartOver }) {
-  const [showBefore, setShowBefore] = useState(false)
+export function ResultDisplay({ original, result, rawGemini, masked, onTryAgain, onStartOver }) {
+  const [activeView, setActiveView] = useState('result')
   const [zoomed, setZoomed] = useState(false)
 
-  const imageSrc = showBefore ? original : result
-  const imageAlt = showBefore ? 'Original selfie' : 'Generated preview'
+  const isDebug = !!(rawGemini || masked)
+
+  const views = useMemo(() => {
+    const list = [
+      { id: 'result', label: 'Final', src: result },
+      { id: 'original', label: 'Original', src: original },
+    ]
+    if (isDebug) {
+      if (rawGemini) list.push({ id: 'raw', label: 'AI Output', src: rawGemini })
+      if (masked?.startsWith('data:')) list.push({ id: 'masked', label: 'Face Mask', src: masked })
+    }
+    return list
+  }, [original, result, rawGemini, masked, isDebug])
+
+  const activeImage = views.find(v => v.id === activeView) || views[0]
 
   return (
     <div className="result-display">
       <h2 className="result-title">Your New Look</h2>
       <div className="result-toggle">
-        <button
-          className={`toggle-btn ${!showBefore ? 'active' : ''}`}
-          onClick={() => setShowBefore(false)}
-        >
-          After
-        </button>
-        <button
-          className={`toggle-btn ${showBefore ? 'active' : ''}`}
-          onClick={() => setShowBefore(true)}
-        >
-          Before
-        </button>
+        {views.map(v => (
+          <button
+            key={v.id}
+            className={`toggle-btn ${activeView === v.id ? 'active' : ''}`}
+            onClick={() => setActiveView(v.id)}
+          >
+            {v.label}
+          </button>
+        ))}
       </div>
       <div
         className={`result-image-container ${zoomed ? 'zoomed' : ''}`}
         onClick={() => setZoomed(z => !z)}
       >
-        <img src={imageSrc} alt={imageAlt} className="result-image" />
+        <img src={activeImage.src} alt={activeImage.label} className="result-image" />
         {!zoomed && <span className="zoom-hint">Tap to zoom</span>}
       </div>
       <div className="result-actions">

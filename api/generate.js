@@ -3,9 +3,9 @@ export default async function handler(req, res) {
     return res.status(405).json({ error: 'Method not allowed' })
   }
 
-  const { imageBase64, mimeType, prompt, model } = req.body
+  const { imageBase64, mimeType, images, prompt, model } = req.body
 
-  if (!imageBase64 || !prompt || !model) {
+  if ((!imageBase64 && !images) || !prompt || !model) {
     return res.status(400).json({ error: 'Missing required fields' })
   }
 
@@ -24,12 +24,20 @@ export default async function handler(req, res) {
           contents: [{
             parts: [
               { text: prompt },
-              {
-                inlineData: {
-                  mimeType: mimeType || 'image/jpeg',
-                  data: imageBase64
-                }
-              }
+              ...(images
+                ? images.map(img => ({
+                    inlineData: {
+                      mimeType: img.mimeType || 'image/jpeg',
+                      data: img.base64
+                    }
+                  }))
+                : [{
+                    inlineData: {
+                      mimeType: mimeType || 'image/jpeg',
+                      data: imageBase64
+                    }
+                  }]
+              )
             ]
           }],
           generationConfig: {
