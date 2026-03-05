@@ -67,7 +67,13 @@ export function CameraCapture({ onCapture }) {
       <div className="capture-prompt">
         <div className="capture-icon">📸</div>
         <h2>Take a Selfie</h2>
-        <p>We'll show you how different highlights would look on your hair</p>
+        <p>We'll show you how different highlights and hairstyles would look on you</p>
+        <ul className="capture-tips">
+          <li>Face the camera with your hair visible</li>
+          <li>Use good, even lighting</li>
+          <li>You'll pick a highlight style, colour, and hairstyle next</li>
+          <li>Select multiple hairstyles to compare them side by side</li>
+        </ul>
       </div>
       <div className="capture-options">
         <label className="btn btn-primary file-input-label">

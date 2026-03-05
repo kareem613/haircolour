@@ -32,6 +32,29 @@
   line-height: 1.4;
 }
 
+.capture-tips {
+  list-style: none;
+  padding: 0;
+  margin: 0.75rem auto 0;
+  max-width: 280px;
+  text-align: left;
+}
+
+.capture-tips li {
+  color: var(--color-text-muted);
+  font-size: 0.85rem;
+  line-height: 1.5;
+  padding-left: 1.25rem;
+  position: relative;
+}
+
+.capture-tips li::before {
+  content: '•';
+  position: absolute;
+  left: 0.25rem;
+  color: var(--color-accent);
+}
+
 .capture-options {
   display: flex;
   flex-direction: column;
