@@ -18,5 +18,11 @@
     "api/stylist-image.js": {
       "maxDuration": 15
     }
-  }
+  },
+  "rewrites": [
+    {
+      "source": "/stylist/:path*",
+      "destination": "/"
+    }
+  ]
 }
