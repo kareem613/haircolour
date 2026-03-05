@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { CameraCapture } from './components/CameraCapture'
 import { StyleSelector } from './components/StyleSelector'
+import { HairstyleSelector } from './components/HairstyleSelector'
 import { ColourSelector } from './components/ColourSelector'
 import { ModelSelector } from './components/ModelSelector'
 import { ResultDisplay } from './components/ResultDisplay'
@@ -18,6 +19,7 @@ function App() {
   const [style, setStyle] = useState(null)
   const [moneyPiece, setMoneyPiece] = useState(false)
   const [colour, setColour] = useState(null)
+  const [hairstyle, setHairstyle] = useState(null)
   const [model, setModel] = useState(MODELS[MODELS.length - 1].id)
   const [resultImage, setResultImage] = useState(null)
   const [rawGeminiImage, setRawGeminiImage] = useState(null)
@@ -69,6 +71,7 @@ function App() {
         style,
         moneyPiece,
         colour,
+        hairstyle,
         model
       })
       setRawGeminiImage(result.imageUrl)
@@ -101,6 +104,7 @@ function App() {
     setStyle(null)
     setMoneyPiece(false)
     setColour(null)
+    setHairstyle(null)
     setError(null)
     setStep('options')
   }
@@ -112,6 +116,7 @@ function App() {
     setStyle(null)
     setMoneyPiece(false)
     setColour(null)
+    setHairstyle(null)
     setError(null)
     setDebugMasked(null)
     setStep('capture')
@@ -144,6 +149,7 @@ function App() {
             {error && <div className="error-banner">{error}</div>}
             <StyleSelector value={style} moneyPiece={moneyPiece} onChange={setStyle} onMoneyPieceChange={setMoneyPiece} />
             <ColourSelector value={colour} onChange={setColour} />
+            <HairstyleSelector value={hairstyle} onChange={setHairstyle} />
             {isDebug && <ModelSelector value={model} onChange={setModel} />}
             <button
               className="btn btn-primary"

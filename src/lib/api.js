@@ -7,9 +7,9 @@ function parseDataUrl(dataUrl) {
   }
 }
 
-export async function generatePreview({ selfieDataUrl, style, moneyPiece, colour, model }) {
+export async function generatePreview({ selfieDataUrl, style, moneyPiece, colour, hairstyle, model }) {
   const { base64, mimeType } = parseDataUrl(selfieDataUrl)
-  const prompt = buildPrompt({ style, moneyPiece, colour })
+  const prompt = buildPrompt({ style, moneyPiece, colour, hairstyle })
 
   const response = await fetch('/api/generate', {
     method: 'POST',
