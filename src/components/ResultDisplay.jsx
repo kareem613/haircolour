@@ -80,9 +80,6 @@ export function ResultDisplay({ original, tabs, settings, onTryAgain, onStartOve
         <div className="settings-summary">
           <span className="settings-pill">{settings.style}</span>
           <span className="settings-pill">{settings.colour}</span>
-          {active.label && active.key !== '_default' && (
-            <span className="settings-pill">{active.label}</span>
-          )}
           {settings.moneyPiece && (
             <span className="settings-pill">Money Piece</span>
           )}
