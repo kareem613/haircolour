@@ -48,10 +48,16 @@
   margin: 0;
 }
 
+.stylist-message {
+  flex: 1;
+  min-width: 0;
+}
+
 .stylist-meta {
   margin: 0;
   color: var(--color-text-muted);
   margin-left: auto;
+  text-align: right;
   white-space: nowrap;
 }
 
@@ -92,4 +98,11 @@
   max-width: min(960px, 100%);
   max-height: 90vh;
   border-radius: var(--radius-md);
+}
+
+.stylist-footer {
+  text-align: center;
+  padding: 0.25rem 1rem 1.2rem;
+  font-size: 0.7rem;
+  color: var(--color-text-muted);
 }

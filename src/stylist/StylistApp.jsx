@@ -124,84 +124,95 @@ export default function StylistApp() {
   const hasSubmissions = useMemo(() => submissions.length > 0, [submissions.length])
 
   if (!authChecked) {
-    return <div className="stylist-screen"><p>Checking access...</p></div>
+    return (
+      <>
+        <div className="stylist-screen"><p>Checking access...</p></div>
+        <footer className="stylist-footer">{__APP_VERSION__} ({__COMMIT_SHA__})</footer>
+      </>
+    )
   }
 
   if (!authenticated) {
     return (
-      <main className="stylist-screen">
-        <section className="stylist-card">
-          <h1>Stylist Portal</h1>
-          <p>Enter your 5-digit access code.</p>
-          <form onSubmit={handleLogin} className="stylist-login">
-            <input
-              type="password"
-              inputMode="numeric"
-              pattern="[0-9]{5}"
-              maxLength={5}
-              value={code}
-              onChange={(event) => setCode(event.target.value.replace(/\D/g, '').slice(0, 5))}
-              placeholder="12345"
-              autoComplete="one-time-code"
-              required
-            />
-            <button className="btn btn-primary" type="submit" disabled={code.length !== 5}>Unlock</button>
-          </form>
-          {authError && <p className="stylist-error">{authError}</p>}
-        </section>
-      </main>
+      <>
+        <main className="stylist-screen">
+          <section className="stylist-card">
+            <h1>Stylist Portal</h1>
+            <p>Enter your 5-digit access code.</p>
+            <form onSubmit={handleLogin} className="stylist-login">
+              <input
+                type="password"
+                inputMode="numeric"
+                pattern="[0-9]{5}"
+                maxLength={5}
+                value={code}
+                onChange={(event) => setCode(event.target.value.replace(/\D/g, '').slice(0, 5))}
+                placeholder="12345"
+                autoComplete="one-time-code"
+                required
+              />
+              <button className="btn btn-primary" type="submit" disabled={code.length !== 5}>Unlock</button>
+            </form>
+            {authError && <p className="stylist-error">{authError}</p>}
+          </section>
+        </main>
+        <footer className="stylist-footer">{__APP_VERSION__} ({__COMMIT_SHA__})</footer>
+      </>
     )
   }
 
   return (
-    <main className="stylist-screen">
-      <section className="stylist-card">
-        <h1>Stylist Portal</h1>
-        <p>Client submissions appear below.</p>
-      </section>
-
-      {authError && <p className="stylist-error">{authError}</p>}
-      {loadingSubmissions && <p>Loading submissions...</p>}
-
-      {!loadingSubmissions && !hasSubmissions && (
+    <>
+      <main className="stylist-screen">
         <section className="stylist-card">
-          <p>No client submissions yet.</p>
+          <h1>Stylist Portal</h1>
+          <p>Client submissions appear below.</p>
         </section>
-      )}
 
-      {!loadingSubmissions && hasSubmissions && (
-        <div className="stylist-submission-list">
-          {submissions.map((submission) => (
-            <article className="stylist-card" key={submission.id}>
-              <div className="stylist-message-row">
-                <p>{submission.message || 'No message provided.'}</p>
-                <p className="stylist-meta">{formatSubmissionTimestamp(submission.timestamp)}</p>
-              </div>
-              <div className="stylist-thumbnail-grid">
-                {submission.imagePaths.map((path) => {
-                  const src = pathToImageUrl(path)
-                  return (
-                    <button
-                      type="button"
-                      className="stylist-thumb"
-                      onClick={() => setSelectedImage(src)}
-                      key={path}
-                    >
-                      <img src={src} alt="Client reference" loading="lazy" />
-                    </button>
-                  )
-                })}
-              </div>
-            </article>
-          ))}
-        </div>
-      )}
+        {authError && <p className="stylist-error">{authError}</p>}
+        {loadingSubmissions && <p>Loading submissions...</p>}
 
-      {selectedImage && (
-        <div className="stylist-modal" role="dialog" aria-modal="true" onClick={() => setSelectedImage(null)}>
-          <img src={selectedImage} alt="Expanded client reference" className="stylist-modal-image" />
-        </div>
-      )}
-    </main>
+        {!loadingSubmissions && !hasSubmissions && (
+          <section className="stylist-card">
+            <p>No client submissions yet.</p>
+          </section>
+        )}
+
+        {!loadingSubmissions && hasSubmissions && (
+          <div className="stylist-submission-list">
+            {submissions.map((submission) => (
+              <article className="stylist-card" key={submission.id}>
+                <div className="stylist-message-row">
+                  <p className="stylist-message">{submission.message || 'No message provided.'}</p>
+                  <p className="stylist-meta">{formatSubmissionTimestamp(submission.timestamp)}</p>
+                </div>
+                <div className="stylist-thumbnail-grid">
+                  {submission.imagePaths.map((path) => {
+                    const src = pathToImageUrl(path)
+                    return (
+                      <button
+                        type="button"
+                        className="stylist-thumb"
+                        onClick={() => setSelectedImage(src)}
+                        key={path}
+                      >
+                        <img src={src} alt="Client reference" loading="lazy" />
+                      </button>
+                    )
+                  })}
+                </div>
+              </article>
+            ))}
+          </div>
+        )}
+
+        {selectedImage && (
+          <div className="stylist-modal" role="dialog" aria-modal="true" onClick={() => setSelectedImage(null)}>
+            <img src={selectedImage} alt="Expanded client reference" className="stylist-modal-image" />
+          </div>
+        )}
+      </main>
+      <footer className="stylist-footer">{__APP_VERSION__} ({__COMMIT_SHA__})</footer>
+    </>
   )
 }
