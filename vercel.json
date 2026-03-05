@@ -8,6 +8,21 @@
     },
     "api/blob.js": {
       "maxDuration": 15
+    },
+    "api/stylist-auth.js": {
+      "maxDuration": 15
+    },
+    "api/stylist-submissions.js": {
+      "maxDuration": 15
+    },
+    "api/stylist-image.js": {
+      "maxDuration": 15
     }
-  }
+  },
+  "rewrites": [
+    {
+      "source": "/stylist/:path*",
+      "destination": "/"
+    }
+  ]
 }

@@ -31,7 +31,7 @@ function normalizeCollectionItem(item) {
   return item
 }
 
-function getDeviceId() {
+export function getDeviceId() {
   let id = localStorage.getItem(DEVICE_ID_KEY)
   if (!id) {
     id = crypto.randomUUID()
@@ -133,4 +133,32 @@ export async function removeFromCollection(id) {
   } catch {
     // ignore errors on removal
   }
+}
+
+export async function submitCollectionShare(imageIds, message) {
+  const deviceId = getDeviceId()
+  const timestamp = Date.now()
+  const collection = getCollection()
+  const selected = collection.filter(item => imageIds.includes(item.id))
+  const res = await fetch('/api/upload', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      action: 'share_request',
+      payload: {
+        stylist: 'Guisselle',
+        imageIds,
+        imagePaths: selected.map(item => item.blobPath).filter(Boolean),
+        message,
+        deviceId,
+        timestamp,
+        userAgent: typeof navigator !== 'undefined' ? navigator.userAgent : null,
+      },
+    }),
+  })
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({ error: 'Share request failed' }))
+    throw new Error(err.error || 'Share request failed')
+  }
+  return res.json()
 }

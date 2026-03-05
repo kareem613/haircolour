@@ -1,5 +1,6 @@
 import { put, del } from '@vercel/blob'
 import { Buffer } from 'node:buffer'
+import { randomUUID } from 'node:crypto'
 
 export default async function handler(req, res) {
   if (req.method !== 'POST') {
@@ -41,6 +42,25 @@ export default async function handler(req, res) {
     try {
       await del(target)
       return res.status(200).json({ success: true })
+    } catch (err) {
+      return res.status(500).json({ error: err.message })
+    }
+  }
+
+  if (action === 'share_request') {
+    const { payload } = req.body
+    if (!payload?.deviceId || !Array.isArray(payload?.imageIds)) {
+      return res.status(400).json({ error: 'Missing share payload fields' })
+    }
+
+    try {
+      const pathname = `share-requests/${payload.deviceId}/${payload.timestamp || Date.now()}-${randomUUID()}.json`
+      const blob = await put(pathname, JSON.stringify(payload, null, 2), {
+        access: 'private',
+        addRandomSuffix: false,
+        contentType: 'application/json',
+      })
+      return res.status(200).json({ pathname: blob.pathname })
     } catch (err) {
       return res.status(500).json({ error: err.message })
     }

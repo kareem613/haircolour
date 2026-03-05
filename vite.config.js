@@ -24,7 +24,7 @@ export default defineConfig({
     react(),
     VitePWA({
       registerType: 'autoUpdate',
-      includeAssets: ['apple-touch-icon.png'],
+      includeAssets: ['apple-touch-icon.png', 'favicon.ico', 'favicon-32x32.png', 'favicon-16x16.png'],
       manifest: {
         name: 'Hair Colour Preview',
         short_name: 'HairColour',

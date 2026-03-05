@@ -8,11 +8,12 @@ import { ResultDisplay } from './components/ResultDisplay'
 import { generatePreview, refineWithOriginalFace } from './lib/api'
 import { MODELS, HIGHLIGHT_STYLES, COLOURS, HAIRSTYLES } from './lib/constants'
 import { createFaceMaskedImage } from './lib/faceMask'
-import { getCollection, addToCollection, updateInCollection, removeFromCollection } from './lib/collection'
+import { getCollection, addToCollection, updateInCollection, removeFromCollection, submitCollectionShare } from './lib/collection'
 import { MyStylesDrawer } from './components/MyStylesDrawer'
 import './App.css'
 
 const isDebug = new URLSearchParams(window.location.search).has('debug')
+const bannerCircle = '/banner-circle.png'
 
 function App() {
   const [step, setStep] = useState('capture')
@@ -227,6 +228,10 @@ function App() {
     setDrawerOpen(false)
   }
 
+  async function handleShareRequest(imageIds, message) {
+    await submitCollectionShare(imageIds, message)
+  }
+
   function handleTryAgain() {
     setResults({})
     setStyle(null)
@@ -256,11 +261,18 @@ function App() {
   return (
     <div className="app">
       <header className="app-header">
-        <h1>Guisselle's Hair Preview</h1>
+        <div className="app-header-bg" style={{ backgroundImage: `url(${bannerCircle})` }} aria-hidden="true" />
+        <div className="app-header-content">
+          <h1>
+            <span className="app-header-prefix">Hair by</span>
+            <span className="app-header-name">Guisselle</span>
+          </h1>
+        </div>
       </header>
+      <img src={bannerCircle} alt="" className="app-header-avatar" />
       <main className="app-body">
         {step === 'capture' && (
-          <CameraCapture onCapture={handleCapture} collection={collection} />
+          <CameraCapture onCapture={handleCapture} />
         )}
 
         {step === 'options' && (
@@ -316,6 +328,7 @@ function App() {
         replaceCandidate={replaceCandidate}
         onReplace={handleReplace}
         onCancelReplace={() => { setReplaceCandidate(null); setDrawerOpen(false) }}
+        onShareRequest={handleShareRequest}
       />
       <footer className="app-footer">
         {__APP_VERSION__} ({__COMMIT_SHA__})
