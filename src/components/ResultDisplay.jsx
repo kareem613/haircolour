@@ -5,7 +5,7 @@ export function ResultDisplay({ original, tabs, settings, onTryAgain, onStartOve
   const [activeTab, setActiveTab] = useState(null)
   const [zoomed, setZoomed] = useState(false)
 
-  // Auto-select first tab, and switch to a newly-completed tab if current is still loading
+  // Auto-select first generated tab (not Original)
   useEffect(() => {
     if (!activeTab && tabs.length > 0) {
       setActiveTab(tabs[0].key)
@@ -13,8 +13,8 @@ export function ResultDisplay({ original, tabs, settings, onTryAgain, onStartOve
   }, [tabs, activeTab])
 
   const allTabs = [
-    ...tabs,
     { key: '_original', label: 'Original', status: 'done', image: original },
+    ...tabs,
   ]
 
   const active = allTabs.find(t => t.key === activeTab) || allTabs[0]
