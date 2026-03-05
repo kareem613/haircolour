@@ -35,7 +35,6 @@ export function CameraCapture({ onCapture }) {
   return (
     <div className="camera-capture">
       <div className="capture-prompt">
-        <div className="capture-icon">💇‍♀️</div>
         <h2>Welcome to Guisselle's</h2>
         <p>Upload a photo and preview different highlights and hairstyles before your appointment</p>
         <ul className="capture-tips">
