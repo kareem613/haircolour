@@ -12,24 +12,42 @@
   text-align: center;
 }
 
-.capture-icon {
-  font-size: 3rem;
-  margin-bottom: 0.5rem;
-}
-
 .capture-prompt h2 {
-  font-size: 1.5rem;
-  font-weight: 600;
+  font-size: 2rem;
+  font-weight: 700;
   color: var(--color-text);
-  margin: 0 0 0.5rem;
+  margin: 0 0 0.75rem;
 }
 
 .capture-prompt p {
-  color: var(--color-text-muted);
-  font-size: 0.95rem;
-  max-width: 280px;
+  color: var(--color-text);
+  font-size: 1.25rem;
+  max-width: 340px;
   margin: 0 auto;
-  line-height: 1.4;
+  line-height: 1.5;
+}
+
+.capture-tips {
+  list-style: none;
+  padding: 0;
+  margin: 1rem auto 0;
+  max-width: 320px;
+  text-align: left;
+}
+
+.capture-tips li {
+  color: #555;
+  font-size: 1.15rem;
+  line-height: 1.6;
+  padding-left: 1.25rem;
+  position: relative;
+}
+
+.capture-tips li::before {
+  content: '•';
+  position: absolute;
+  left: 0.25rem;
+  color: var(--color-accent);
 }
 
 .capture-options {

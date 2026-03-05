@@ -13,39 +13,73 @@
   margin: 0;
 }
 
-.result-toggle {
+/* Tabs row — wrapping grid, 3 per row */
+.result-tabs {
   display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
   background: var(--color-border);
   border-radius: var(--radius-md);
-  padding: 3px;
-  gap: 2px;
+  padding: 4px;
+  width: 100%;
 }
 
-.toggle-btn {
-  padding: 0.4rem 1.25rem;
+.result-tab {
+  position: relative;
+  padding: 0.7rem 0.5rem;
   border: none;
   border-radius: calc(var(--radius-md) - 2px);
-  font-size: 0.85rem;
-  font-weight: 500;
+  font-size: 0.95rem;
+  font-weight: 600;
   font-family: inherit;
   cursor: pointer;
   background: transparent;
   color: var(--color-text-muted);
   transition: background 0.15s, color 0.15s;
+  white-space: nowrap;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.35rem;
+  flex: 1 1 calc(33.33% - 4px);
+  min-width: 0;
 }
 
-.toggle-btn.active {
+.result-tab.active {
   background: var(--color-surface);
   color: var(--color-text);
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
 }
 
+.result-tab.error {
+  color: var(--color-error);
+}
+
+/* Tiny spinner inside tab */
+.tab-spinner {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  border: 2px solid var(--color-border);
+  border-top-color: var(--color-accent);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+  flex-shrink: 0;
+}
+
+.result-tab.active .tab-spinner {
+  border-color: rgba(0,0,0,0.15);
+  border-top-color: var(--color-accent);
+}
+
+/* Image container */
 .result-image-container {
   position: relative;
   width: 100%;
   cursor: zoom-in;
   border-radius: var(--radius-lg);
   overflow: hidden;
+  min-height: 200px;
 }
 
 .result-image-container.zoomed {
@@ -88,6 +122,107 @@
   pointer-events: none;
 }
 
+/* Loading state inside image area */
+.result-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  padding: 3rem 1rem;
+  min-height: 300px;
+  background: var(--color-surface);
+  border-radius: var(--radius-lg);
+  width: 100%;
+}
+
+.result-loading p {
+  color: var(--color-text-muted);
+  font-size: 0.9rem;
+  margin: 0;
+}
+
+.result-error-text {
+  color: var(--color-error) !important;
+}
+
+.retry-btn {
+  margin-top: 0.5rem;
+  max-width: 200px;
+}
+
+/* Feedback reaction buttons */
+.feedback-row {
+  display: flex;
+  gap: 0.4rem;
+  width: 100%;
+  justify-content: center;
+}
+
+.feedback-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.2rem;
+  padding: 0.5rem 0.6rem;
+  border: 2px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: var(--color-surface);
+  cursor: pointer;
+  transition: border-color 0.15s, background 0.15s, transform 0.1s;
+  flex: 1;
+  min-width: 0;
+  font-family: inherit;
+}
+
+.feedback-btn:active {
+  transform: scale(0.95);
+}
+
+.feedback-btn.selected {
+  border-color: var(--color-accent);
+  background: rgba(139, 92, 246, 0.08);
+}
+
+.feedback-emoji {
+  font-size: 1.3rem;
+  line-height: 1;
+}
+
+.feedback-label {
+  font-size: 0.65rem;
+  font-weight: 600;
+  color: var(--color-text-muted);
+  white-space: nowrap;
+}
+
+.feedback-btn.selected .feedback-label {
+  color: var(--color-accent);
+}
+
+.regenerate-btn {
+  max-width: 250px;
+}
+
+/* Settings summary pills */
+.settings-summary {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  justify-content: center;
+}
+
+.settings-pill {
+  display: inline-block;
+  padding: 0.25rem 0.65rem;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: 999px;
+  font-size: 0.75rem;
+  color: var(--color-text-muted);
+}
+
+/* Actions */
 .result-actions {
   display: flex;
   flex-direction: column;
@@ -95,4 +230,8 @@
   width: 100%;
   max-width: 300px;
   margin-top: 0.5rem;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
 }

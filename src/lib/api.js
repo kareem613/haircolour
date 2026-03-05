@@ -7,9 +7,28 @@ function parseDataUrl(dataUrl) {
   }
 }
 
-export async function generatePreview({ selfieDataUrl, style, moneyPiece, colour, model }) {
+function shrinkDataUrl(dataUrl, maxDim = 1024) {
+  return new Promise((resolve) => {
+    const img = new Image()
+    img.onload = () => {
+      let w = img.naturalWidth
+      let h = img.naturalHeight
+      if (w <= maxDim && h <= maxDim) { resolve(dataUrl); return }
+      const scale = maxDim / Math.max(w, h)
+      w = Math.round(w * scale)
+      h = Math.round(h * scale)
+      const c = document.createElement('canvas')
+      c.width = w; c.height = h
+      c.getContext('2d').drawImage(img, 0, 0, w, h)
+      resolve(c.toDataURL('image/jpeg', 0.8))
+    }
+    img.src = dataUrl
+  })
+}
+
+export async function generatePreview({ selfieDataUrl, style, moneyPiece, colour, hairstyle, model }) {
   const { base64, mimeType } = parseDataUrl(selfieDataUrl)
-  const prompt = buildPrompt({ style, moneyPiece, colour })
+  const prompt = buildPrompt({ style, moneyPiece, colour, hairstyle })
 
   const response = await fetch('/api/generate', {
     method: 'POST',
@@ -34,8 +53,9 @@ export async function generatePreview({ selfieDataUrl, style, moneyPiece, colour
 }
 
 export async function refineWithOriginalFace({ originalDataUrl, generatedDataUrl, model }) {
+  const shrunkGenerated = await shrinkDataUrl(generatedDataUrl)
   const original = parseDataUrl(originalDataUrl)
-  const generated = parseDataUrl(generatedDataUrl)
+  const generated = parseDataUrl(shrunkGenerated)
   const prompt = buildRefinePrompt()
 
   const response = await fetch('/api/generate', {

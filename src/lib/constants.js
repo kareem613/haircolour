@@ -15,6 +15,16 @@ export const COLOURS = [
   { id: 'chocolate', label: 'Chocolate', swatch: '#5C3A1E' },
 ]
 
+export const HAIRSTYLES = [
+  { id: 'beach-waves', label: 'Beach Waves', description: 'Loose, tousled waves with a relaxed feel', short: false },
+  { id: 'short-hair', label: 'Short Hair', description: 'Cropped above the ears', short: true },
+  { id: 'bob', label: 'Bob', description: 'Classic chin-length cut', short: true },
+  { id: 'pixie-cut', label: 'Pixie Cut', description: 'Short, close-cropped style', short: true },
+  { id: 'long-layers', label: 'Long Layers', description: 'Long hair with layered movement', short: false },
+  { id: 'short-layers', label: 'Short Layers', description: 'Short hair with textured layers', short: true },
+  { id: 'one-length', label: 'One Length', description: 'Even, blunt cut all around', short: false },
+]
+
 export const MODELS = [
   { id: 'gemini-2.0-flash-exp-image-generation', label: 'Gemini 2.0 Flash (Image Gen) Experimental' },
   { id: 'gemini-2.5-flash-image', label: 'Gemini 2.5 Flash Image' },
