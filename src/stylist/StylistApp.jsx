@@ -137,6 +137,7 @@ export default function StylistApp() {
       <>
         <main className="stylist-screen">
           <section className="stylist-card">
+            <a href="/" className="stylist-home-link">← Back to Home</a>
             <h1>Stylist Portal</h1>
             <p>Enter your 5-digit access code.</p>
             <form onSubmit={handleLogin} className="stylist-login">
@@ -165,6 +166,7 @@ export default function StylistApp() {
     <>
       <main className="stylist-screen">
         <section className="stylist-card">
+          <a href="/" className="stylist-home-link">← Back to Home</a>
           <h1>Stylist Portal</h1>
           <p>Client submissions appear below.</p>
         </section>

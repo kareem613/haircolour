@@ -14,6 +14,15 @@
   padding: 1rem;
 }
 
+.stylist-home-link {
+  display: inline-block;
+  margin-bottom: 0.65rem;
+  font-size: 0.9rem;
+  color: var(--color-accent);
+  text-decoration: underline;
+  text-underline-offset: 0.14em;
+}
+
 .stylist-login {
   margin-top: 0.75rem;
   display: flex;
