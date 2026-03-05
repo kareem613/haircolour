@@ -1,10 +1,25 @@
 import { useState, useEffect, useRef } from 'react'
 import './ResultDisplay.css'
 
+const FEEDBACK_OPTIONS = [
+  { key: 'love', label: 'I Love It', emoji: '❤️' },
+  { key: 'maybe', label: 'Maybe', emoji: '🤔' },
+  { key: 'notforme', label: 'Not For Me', emoji: '👎' },
+  { key: 'looksoff', label: 'Looks Off', emoji: '⚠️' },
+]
+
 export function ResultDisplay({ original, tabs, settings, onRetry, onTryAgain, onStartOver }) {
   const [activeTab, setActiveTab] = useState(null)
   const [zoomed, setZoomed] = useState(false)
   const hasAutoSwitched = useRef(false)
+  const [feedback, setFeedback] = useState({}) // { [tabKey]: 'love'|'maybe'|'notforme'|'looksoff' }
+
+  function handleFeedback(tabKey, feedbackKey) {
+    setFeedback(prev => ({
+      ...prev,
+      [tabKey]: prev[tabKey] === feedbackKey ? null : feedbackKey,
+    }))
+  }
 
   // Auto-select first generated tab (not Original)
   useEffect(() => {
@@ -91,6 +106,33 @@ export function ResultDisplay({ original, tabs, settings, onRetry, onTryAgain, o
           </>
         )}
       </div>
+
+      {active.key !== '_original' && active.status === 'done' && (
+        <div className="feedback-row">
+          {FEEDBACK_OPTIONS.map(opt => (
+            <button
+              key={opt.key}
+              className={`feedback-btn ${feedback[active.key] === opt.key ? 'selected' : ''}`}
+              onClick={() => handleFeedback(active.key, opt.key)}
+            >
+              <span className="feedback-emoji">{opt.emoji}</span>
+              <span className="feedback-label">{opt.label}</span>
+            </button>
+          ))}
+        </div>
+      )}
+
+      {feedback[active.key] === 'looksoff' && onRetry && (
+        <button
+          className="btn btn-primary regenerate-btn"
+          onClick={() => {
+            setFeedback(prev => ({ ...prev, [active.key]: null }))
+            onRetry(active.key)
+          }}
+        >
+          Regenerate This Style
+        </button>
+      )}
 
       {active.key !== '_original' && (
         <div className="settings-summary">

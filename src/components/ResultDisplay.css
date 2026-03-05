@@ -151,6 +151,59 @@
   max-width: 200px;
 }
 
+/* Feedback reaction buttons */
+.feedback-row {
+  display: flex;
+  gap: 0.4rem;
+  width: 100%;
+  justify-content: center;
+}
+
+.feedback-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.2rem;
+  padding: 0.5rem 0.6rem;
+  border: 2px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: var(--color-surface);
+  cursor: pointer;
+  transition: border-color 0.15s, background 0.15s, transform 0.1s;
+  flex: 1;
+  min-width: 0;
+  font-family: inherit;
+}
+
+.feedback-btn:active {
+  transform: scale(0.95);
+}
+
+.feedback-btn.selected {
+  border-color: var(--color-accent);
+  background: rgba(139, 92, 246, 0.08);
+}
+
+.feedback-emoji {
+  font-size: 1.3rem;
+  line-height: 1;
+}
+
+.feedback-label {
+  font-size: 0.65rem;
+  font-weight: 600;
+  color: var(--color-text-muted);
+  white-space: nowrap;
+}
+
+.feedback-btn.selected .feedback-label {
+  color: var(--color-accent);
+}
+
+.regenerate-btn {
+  max-width: 250px;
+}
+
 /* Settings summary pills */
 .settings-summary {
   display: flex;
