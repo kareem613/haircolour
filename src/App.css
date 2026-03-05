@@ -1,4 +1,7 @@
 .app {
+  --header-height: 146px;
+  --header-avatar-size: 108px;
+  position: relative;
   display: flex;
   flex-direction: column;
   min-height: 100vh;
@@ -8,21 +11,73 @@
 }
 
 .app-header {
+  position: relative;
+  overflow: hidden;
+  border-bottom: 1px solid #d4c7ba;
+  background: linear-gradient(135deg, #7b4634, #a97964);
+  min-height: var(--header-height);
+}
+
+.app-header-bg {
+  position: absolute;
+  inset: -42% -24%;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+  filter: blur(1px) saturate(1);
+  opacity: 0.58;
+  transform: scale(1.5);
+}
+
+.app-header-content {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
   text-align: center;
-  padding: 1.25rem 1rem 0.75rem;
-  border-bottom: 1px solid var(--color-border);
+  padding: 1.15rem 1rem 0.85rem;
+}
+
+.app-header-avatar {
+  position: absolute;
+  left: 50%;
+  top: var(--header-height);
+  transform: translate(-50%, -50%);
+  z-index: 2;
+  width: var(--header-avatar-size);
+  height: var(--header-avatar-size);
+  border-radius: 999px;
+  object-fit: cover;
+  border: 3px solid rgba(255, 255, 255, 0.86);
+  box-shadow: 0 10px 24px rgba(29, 13, 6, 0.35);
 }
 
 .app-header h1 {
-  font-size: 1.1rem;
-  font-weight: 700;
-  letter-spacing: -0.01em;
+  color: #fff7ef;
+  font-size: 1.7rem;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  text-shadow: 0 2px 6px rgba(42, 18, 9, 0.34);
+}
+
+.app-header-prefix {
+  display: block;
+  font-weight: 300;
+}
+
+.app-header-name {
+  display: block;
+  font-weight: 800;
+  line-height: 1.02;
 }
 
 .app-body {
   flex: 1;
   display: flex;
   flex-direction: column;
+  padding-top: calc((var(--header-avatar-size) / 2) + 0.9rem);
   padding-bottom: 2.5rem; /* space for collapsed drawer bar */
 }
 

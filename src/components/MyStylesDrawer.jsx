@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import './MyStylesDrawer.css'
 
 const MAX_SLOTS = 6
@@ -20,10 +20,21 @@ export function MyStylesDrawer({
   const [shareMessage, setShareMessage] = useState('')
   const [shareStatus, setShareStatus] = useState('idle')
   const [shareError, setShareError] = useState('')
+  const [bumpDismissed, setBumpDismissed] = useState(false)
   const count = collection.length
   const isReplaceMode = !!replaceCandidate
 
   const slots = Array.from({ length: MAX_SLOTS }, (_, i) => collection[i] || null)
+
+  useEffect(() => {
+    if (count === 0) {
+      setBumpDismissed(false)
+      return
+    }
+    if (open) {
+      setBumpDismissed(true)
+    }
+  }, [count, open])
 
   function resetShareState() {
     setShareMode(false)
@@ -63,7 +74,7 @@ export function MyStylesDrawer({
 
   return (
     <>
-      <div className="drawer-bar" onClick={handleToggleDrawer}>
+      <div className={`drawer-bar ${count > 0 && !open && !bumpDismissed ? 'drawer-bar-has-items' : ''}`} onClick={handleToggleDrawer}>
         <span className="drawer-bar-label">── My Styles ({count}/{MAX_SLOTS}) ──</span>
       </div>
 

@@ -1,9 +1,7 @@
-import { useState } from 'react'
 import heic2any from 'heic2any'
 import './CameraCapture.css'
 
-export function CameraCapture({ onCapture, collection = [] }) {
-  const [zoomedItem, setZoomedItem] = useState(null)
+export function CameraCapture({ onCapture }) {
   async function handleFileChange(e) {
     const file = e.target.files?.[0]
     if (!file) return
@@ -45,31 +43,16 @@ export function CameraCapture({ onCapture, collection = [] }) {
   return (
     <div className="camera-capture">
       <div className="capture-prompt">
-        <h2>Welcome to Guisselle's</h2>
+        <h2>My Next Style</h2>
         <p>Try out highlights and styles before your next appointment</p>
         <ul className="capture-tips">
-          <li>Use a photo where your hair is clearly visible</li>
-          <li>Good, even lighting works best</li>
-          <li>You'll pick a highlight style, colour, and hairstyle next</li>
-          <li>Select multiple hairstyles to compare them side by side</li>
+          <li>Take a selfie (good, even lighting works best)</li>
+          <li>Pick highlight and colour</li>
+          <li>Select all the styles you want to try</li>
+          <li>Save the ones you like</li>
+          <li>Share them with Guisselle before your next appointment</li>
         </ul>
       </div>
-      {collection.length > 0 && (
-        <div className="saved-strip">
-          <span className="saved-strip-label">My Styles</span>
-          <div className="saved-strip-scroll">
-            {collection.map(item => (
-              <img
-                key={item.id}
-                src={item.image}
-                alt={`${item.style} ${item.colour}`}
-                className="saved-strip-thumb"
-                onClick={() => setZoomedItem(item)}
-              />
-            ))}
-          </div>
-        </div>
-      )}
       <div className="capture-options">
         <label className="btn btn-primary file-input-label">
           Take Photo
@@ -80,11 +63,6 @@ export function CameraCapture({ onCapture, collection = [] }) {
           <input type="file" accept="image/*" onChange={handleFileChange} hidden />
         </label>
       </div>
-      {zoomedItem && (
-        <div className="saved-zoom-overlay" onClick={() => setZoomedItem(null)}>
-          <img src={zoomedItem.image} alt={`${zoomedItem.style} ${zoomedItem.colour}`} className="saved-zoom-image" />
-        </div>
-      )}
     </div>
   )
 }

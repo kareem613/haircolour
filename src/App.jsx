@@ -10,6 +10,7 @@ import { MODELS, HIGHLIGHT_STYLES, COLOURS, HAIRSTYLES } from './lib/constants'
 import { createFaceMaskedImage } from './lib/faceMask'
 import { getCollection, addToCollection, updateInCollection, removeFromCollection, submitCollectionShare } from './lib/collection'
 import { MyStylesDrawer } from './components/MyStylesDrawer'
+import bannerCircle from '../scratch/banner-circle.png'
 import './App.css'
 
 const isDebug = new URLSearchParams(window.location.search).has('debug')
@@ -260,11 +261,18 @@ function App() {
   return (
     <div className="app">
       <header className="app-header">
-        <h1>Guisselle's Hair Preview</h1>
+        <div className="app-header-bg" style={{ backgroundImage: `url(${bannerCircle})` }} aria-hidden="true" />
+        <div className="app-header-content">
+          <h1>
+            <span className="app-header-prefix">Hair by</span>
+            <span className="app-header-name">Guisselle</span>
+          </h1>
+        </div>
       </header>
+      <img src={bannerCircle} alt="" className="app-header-avatar" />
       <main className="app-body">
         {step === 'capture' && (
-          <CameraCapture onCapture={handleCapture} collection={collection} />
+          <CameraCapture onCapture={handleCapture} />
         )}
 
         {step === 'options' && (
