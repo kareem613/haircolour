@@ -19,12 +19,20 @@ export function CameraCapture({ onCapture }) {
     const url = URL.createObjectURL(blob)
     const img = new Image()
     img.onload = () => {
+      const MAX_DIM = 1024
+      let w = img.naturalWidth
+      let h = img.naturalHeight
+      if (w > MAX_DIM || h > MAX_DIM) {
+        const scale = MAX_DIM / Math.max(w, h)
+        w = Math.round(w * scale)
+        h = Math.round(h * scale)
+      }
       const canvas = document.createElement('canvas')
-      canvas.width = img.naturalWidth
-      canvas.height = img.naturalHeight
-      canvas.getContext('2d').drawImage(img, 0, 0)
+      canvas.width = w
+      canvas.height = h
+      canvas.getContext('2d').drawImage(img, 0, 0, w, h)
       URL.revokeObjectURL(url)
-      onCapture(canvas.toDataURL('image/jpeg', 0.85))
+      onCapture(canvas.toDataURL('image/jpeg', 0.8))
     }
     img.onerror = () => {
       URL.revokeObjectURL(url)
