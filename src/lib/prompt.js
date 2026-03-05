@@ -55,10 +55,11 @@ export function buildPrompt({ style, moneyPiece, colour, hairstyle }) {
 - Mixed hair lengths — the ENTIRE head of hair must be the requested ${hairstyleName} style`
     if (isShortStyle) {
       negativePrompt += `
-- ANY long hair remaining — if the original hair is long, ALL of it must be replaced with the short ${hairstyleName} style
+- ANY long hair remaining — if the original hair is long, ALL of it must be COMPLETELY removed and replaced with the ${hairstyleName} style
 - Long strands, wisps, or sections hanging below the ${hairstyleName} cut line
 - Hair appearing on shoulders or back that contradicts the short style
-- A short style layered on top with long hair still visible underneath`
+- A short style layered on top with long hair still visible underneath or behind
+- CRITICAL: Remove ALL hair below the cut line. For a Bob, no hair below the chin. For a Pixie Cut, no hair below the ears. The cut must be clean with NO remnants of the original length visible from any angle`
     }
   }
 
