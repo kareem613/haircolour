@@ -130,6 +130,19 @@
   color: var(--color-text-muted);
 }
 
+.app-stylist-entry {
+  text-align: center;
+  margin-top: 0.5rem;
+}
+
+.app-stylist-entry-link {
+  color: var(--color-accent);
+  font-size: 0.95rem;
+  font-weight: 600;
+  text-decoration: underline;
+  text-underline-offset: 0.16em;
+}
+
 .error-banner {
   background: #ffeaea;
   color: var(--color-error);

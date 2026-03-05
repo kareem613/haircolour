@@ -1,7 +1,28 @@
 import { createHmac, timingSafeEqual } from 'node:crypto'
+import { readFileSync } from 'node:fs'
+import { join } from 'node:path'
 
 const COOKIE_NAME = 'stylist_session'
 const SESSION_MAX_AGE_SECONDS = 60 * 60 * 24 * 30
+const STYLIST_PASSCODE_KEY = 'STYLIST_PORTAL_CODE'
+const LOCAL_ENV_FILES = [
+  '.env.local',
+  '.vercel/.env.development.local',
+  '.vercel/.env.preview.local',
+  '.vercel/.env.production.local',
+]
+
+function readEnvVarFromFile(filePath, key) {
+  try {
+    const file = readFileSync(filePath, 'utf8')
+    const escaped = key.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+    const match = file.match(new RegExp(`^\\s*${escaped}\\s*=\\s*([^\\n\\r]+)`, 'm'))
+    if (!match) return null
+    return match[1].trim().replace(/^['"]|['"]$/g, '')
+  } catch {
+    return null
+  }
+}
 
 function toBase64Url(value) {
   return Buffer.from(value).toString('base64url')
@@ -58,7 +79,9 @@ function verifyToken(token, passcode) {
 }
 
 export function getStylistPasscode() {
-  const passcode = process.env.STYLIST_PORTAL_CODE
+  const passcode = process.env[STYLIST_PASSCODE_KEY] || LOCAL_ENV_FILES
+    .map(file => readEnvVarFromFile(join(process.cwd(), file), STYLIST_PASSCODE_KEY))
+    .find(Boolean)
   if (!passcode || !/^\d{5}$/.test(passcode)) {
     return null
   }

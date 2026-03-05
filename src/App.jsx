@@ -32,6 +32,7 @@ function App() {
   const [collection, setCollection] = useState(() => getCollection())
   const [drawerOpen, setDrawerOpen] = useState(false)
   const [replaceCandidate, setReplaceCandidate] = useState(null)
+  const [showStylistPortalLink, setShowStylistPortalLink] = useState(false)
 
   function handleCapture(dataUrl) {
     setSelfieData(dataUrl)
@@ -63,6 +64,23 @@ function App() {
           reader.readAsDataURL(blob)
         })
         .catch(() => {})
+    }
+  }, [])
+
+  useEffect(() => {
+    let active = true
+    fetch('/api/stylist-auth', { credentials: 'include' })
+      .then(res => (res.ok ? res.json() : null))
+      .then((data) => {
+        if (!active) return
+        setShowStylistPortalLink(Boolean(data?.authenticated))
+      })
+      .catch(() => {
+        if (!active) return
+        setShowStylistPortalLink(false)
+      })
+    return () => {
+      active = false
     }
   }, [])
 
@@ -330,6 +348,11 @@ function App() {
         onCancelReplace={() => { setReplaceCandidate(null); setDrawerOpen(false) }}
         onShareRequest={handleShareRequest}
       />
+      {step === 'capture' && showStylistPortalLink && (
+        <div className="app-stylist-entry">
+          <a href="/stylist" className="app-stylist-entry-link">Open Stylist Portal</a>
+        </div>
+      )}
       <footer className="app-footer">
         {__APP_VERSION__} ({__COMMIT_SHA__})
       </footer>
