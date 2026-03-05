@@ -137,7 +137,7 @@ function App() {
             {error && <div className="error-banner">{error}</div>}
             <StyleSelector value={style} moneyPiece={moneyPiece} onChange={setStyle} onMoneyPieceChange={setMoneyPiece} />
             <ColourSelector value={colour} onChange={setColour} />
-            <ModelSelector value={model} onChange={setModel} />
+            {isDebug && <ModelSelector value={model} onChange={setModel} />}
             <button
               className="btn btn-primary"
               disabled={!style || !colour}
