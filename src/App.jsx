@@ -171,7 +171,7 @@ function App() {
   return (
     <div className="app">
       <header className="app-header">
-        <h1>Hair Colour Preview</h1>
+        <h1>Guisselle's Hair Preview</h1>
       </header>
       <main className="app-body">
         {step === 'capture' && (
